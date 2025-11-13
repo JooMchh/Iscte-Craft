@@ -72,8 +72,10 @@ public class VoxelWorld {
     public byte getBlock(int x, int y, int z) {
         Chunk c = getChunk(x, y, z);
         if (c == null) return VoxelPalette.AIR_ID;
+        if (!inBounds(x,y,z)) return VoxelPalette.AIR_ID;
         return c.get(lx(x), ly(y), lz(z));
     }
+
     public void setBlock(int x, int y, int z, byte id) {
         Chunk c = getChunk(x, y, z);
         if (c != null) {
@@ -104,9 +106,25 @@ public class VoxelWorld {
 
     //TODO this is where you'll generate your world
     public void generateLayers() {
-        //generate a SINGLE block under the player:
+        //Le spawn point and perlin generation
+        int seed = 123456789;
+        PerlinNoise perlin = new PerlinNoise(seed);
+
         Vector3i pos = new Vector3i(getRecommendedSpawn());
-        setBlock(pos.x, pos.y, pos.z, VoxelPalette.STONE_ID);
+        int radius = 128;
+
+        for (int x = pos.x - radius; x < pos.x + radius; x++) {
+            for (int z = pos.x - radius; z < pos.z + radius; z++) {
+                double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
+                int height = (int) (20 + noise * 10);
+
+                // Layer Generation
+                for (int y = 0; y <= height; y++) {
+                    this.setBlock(x,y,z, this.palette.STONE_ID);
+                }
+            }
+        }
+
     }
 
     public int getTopSolidY(int x, int z) {
