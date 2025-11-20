@@ -117,11 +117,18 @@ public class VoxelWorld {
             for (int z = pos.x - radius; z < pos.z + radius; z++) {
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 10);
+                int dirtThickness = 4;
+
 
                 // Layer Generation
-                for (int y = 0; y <= height; y++) {
-                    this.setBlock(x,y,z, this.palette.STONE_ID);
+                for (int y = 0; y < height - dirtThickness; y++) {
+                    this.setBlock(x, y, z, this.palette.STONE_ID);
                 }
+
+                for (int y = height - dirtThickness; y <= height; y++) {
+                    this.setBlock(x, y, z, this.palette.DIRT_ID);
+                }
+                this.setBlock(x, 0, z, this.palette.BEDROCK_ID);
             }
         }
 
