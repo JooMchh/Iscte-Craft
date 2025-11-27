@@ -102,11 +102,11 @@ public class VoxelWorld {
         return true;
     }
 
+
     public Node getNode() { return node; }
 
     //TODO this is where you'll generate your world
     public void generateLayers() {
-        //Le spawn point and perlin generation
         int seed = 123456789;
         PerlinNoise perlin = new PerlinNoise(seed);
 
@@ -114,25 +114,33 @@ public class VoxelWorld {
         int radius = 128;
 
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
-            for (int z = pos.x - radius; z < pos.z + radius; z++) {
+            for (int z = pos.z - radius; z < pos.z + radius; z++) {
+
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 10);
                 int dirtThickness = 4;
 
-
-                // Layer Generation
-                for (int y = 0; y < height - dirtThickness; y++) {
+                // === Gerar pedra ===
+                for (int y = 0; y < height - dirtThickness; y++)
                     this.setBlock(x, y, z, this.palette.STONE_ID);
-                }
 
-                for (int y = height - dirtThickness; y <= height; y++) {
+                // === Gerar terra ===
+                for (int y = height - dirtThickness; y <= height; y++)
                     this.setBlock(x, y, z, this.palette.DIRT_ID);
-                }
+
+                // === Bedrock no fundo ===
                 this.setBlock(x, 0, z, this.palette.BEDROCK_ID);
+
+                // === Tentar colocar árvore ===
+                int topY = getTopSolidY(x, z);
+                if (Math.random() < 0.02) { // 2%
+                    if (topY > 0)
+                        placeTree(x, topY + 1, z);
+                }
             }
         }
-
     }
+
 
     public int getTopSolidY(int x, int z) {
         if (x < 0 || z < 0 || x >= sizeX || z >= sizeZ) return -1;
@@ -269,6 +277,31 @@ public class VoxelWorld {
 
     private boolean inBounds(int x, int y, int z) {
         return x >= 0 && y >= 0 && z >= 0 && x < sizeX && y < sizeY && z < sizeZ;
+    }
+
+    public void placeTree(int x, int y, int z) {
+        int trunkHeight = 4 + (int)(Math.random() * 3);
+
+        // Tronco
+        for (int i = 0; i < trunkHeight; i++) {
+            setBlock(x, y + i, z, palette.WOOD_ID);
+        }
+
+        int leavesStart = y + trunkHeight;
+
+        int radius = 2 + (int)(Math.random() * 2);
+
+        // Folhas
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    int dist = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
+                    if (dist <= radius + 1) {
+                        setBlock(x + dx, leavesStart + dy, z + dz, palette.LEAVES_ID);
+                    }
+                }
+            }
+        }
     }
 
     public void setLit(boolean lit) {
