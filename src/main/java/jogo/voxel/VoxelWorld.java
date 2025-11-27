@@ -118,18 +118,26 @@ public class VoxelWorld {
 
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 10);
-                int dirtThickness = 4;
+                int dirtThickness = 2;
+                int grassThickness = 1;
+                int caveHeight = 3;
 
-                // === Gerar pedra ===
-                for (int y = 0; y < height - dirtThickness; y++)
-                    this.setBlock(x, y, z, this.palette.STONE_ID);
+                for (int y = 0; y <= height; y++) {
+                    double caveNoise = perlin.noise(x * 0.05, y * 0.05, z * 0.05);
 
-                // === Gerar terra ===
-                for (int y = height - dirtThickness; y <= height; y++)
-                    this.setBlock(x, y, z, this.palette.DIRT_ID);
-
-                // === Bedrock no fundo ===
-                this.setBlock(x, 0, z, this.palette.BEDROCK_ID);
+                    if (y == 0) {
+                        setBlock(x, y, z, VoxelPalette.BEDROCK_ID);
+                    } else if (caveNoise > 0.3 && y <= height - caveHeight - grassThickness - dirtThickness) {
+                        System.out.println("CAVE at " + x + "," + y + "," + z);
+                        setBlock(x, y, z, VoxelPalette.AIR_ID);
+                    } else if (y >= height - grassThickness) {
+                        setBlock(x, y, z, VoxelPalette.GRASS_ID);
+                    } else if (y >= height - dirtThickness - grassThickness) {
+                        setBlock(x, y, z, VoxelPalette.DIRT_ID);
+                    } else {
+                        setBlock(x, y, z, VoxelPalette.STONE_ID);
+                    }
+                }
 
                 // === Tentar colocar árvore ===
                 int topY = getTopSolidY(x, z);

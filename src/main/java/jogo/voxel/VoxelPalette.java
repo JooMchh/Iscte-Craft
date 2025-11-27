@@ -27,17 +27,19 @@ public class VoxelPalette {
         VoxelPalette p = new VoxelPalette();
         p.register(new AirBlockType());   // id 0
         p.register(new StoneBlockType()); // id 1
-        p.register(new DirtBlockType()); // id 2
+        p.register(new GrassBlockType()); // id 2
         p.register(new BedrockBlockType()); // id 3
         p.register(new WoodBlockType()); //id 4
         p.register(new LeavesBlockType()); //id 5
+        p.register(new DirtBlockType()); //id 6
         return p;
     }
 
     public static final byte AIR_ID = 0;
     public static final byte STONE_ID = 1;
-    public static final byte DIRT_ID = 2;
+    public static final byte GRASS_ID = 2;
     public static final byte BEDROCK_ID = 3;
     public static final byte WOOD_ID = 4;
     public static final byte LEAVES_ID = 5;
+    public static final byte DIRT_ID = 6;
 }
