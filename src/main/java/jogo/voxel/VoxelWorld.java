@@ -117,7 +117,7 @@ public class VoxelWorld {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
 
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
-                int height = (int) (20 + noise * 10);
+                int height = (int) (20 + noise * 5);
                 int dirtThickness = 2;
                 int grassThickness = 1;
                 int caveHeight = 3;
