@@ -141,8 +141,8 @@ public class VoxelWorld {
                 }
 
                 int topY = getTopSolidY(x, z, "grass");
-                if (Math.random() < 0.02) { // 2%
-                    if (topY > 0 && checkSurroundings(x, topY + 1, z, "wood") == 0)
+                if (Math.random() < 0.002 && checkSurroundings(x, topY+1, z, 5, "wood") == 0) { // 2% + verificar espaço
+                    if (topY > 0)
                         placeTree(x, topY + 1, z);
                 }
 
@@ -158,7 +158,7 @@ public class VoxelWorld {
                 {0, 0, 1}, {0, 0, -1}
         };
         for (int[] dir : directions) {
-            for (int r = 0; r <= radius; r++) {
+            for (int r = 1; r <= radius; r++) {
                 int nx = x + dir[0] * r;
                 int ny = y + dir[1] * r;
                 int nz = z + dir[2] * r;
@@ -189,7 +189,7 @@ public class VoxelWorld {
     public Vector3f getRecommendedSpawn() {
         int cx = sizeX / 2;
         int cz = sizeZ / 2;
-        int ty = getTopSolidY(cx, cz);
+        int ty = getTopSolidY(cx, cz, null);
         if (ty < 0) ty = groundHeight;
         return new Vector3f(cx + 0.5f, ty + 3.0f, cz + 0.5f);
     }
