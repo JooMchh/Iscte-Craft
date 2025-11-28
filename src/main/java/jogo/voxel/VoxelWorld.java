@@ -112,6 +112,7 @@ public class VoxelWorld {
 
         Vector3i pos = new Vector3i(getRecommendedSpawn());
         int radius = 128;
+        int treeCooldown = 15;
 
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
@@ -139,21 +140,48 @@ public class VoxelWorld {
                     }
                 }
 
-                // === Tentar colocar árvore ===
-                int topY = getTopSolidY(x, z);
+                int topY = getTopSolidY(x, z, "grass");
                 if (Math.random() < 0.02) { // 2%
-                    if (topY > 0)
+                    if (topY > 0 && checkSurroundings(x, topY + 1, z, "wood") == 0)
                         placeTree(x, topY + 1, z);
                 }
+
             }
         }
     }
 
+    public int checkSurroundings(int x, int y, int z, int radius, String blockType) {
+        int count = 0;
+        int[][] directions = { // direções dos 6 blocos adjacentes
+                {1, 0, 0}, {-1, 0, 0},
+                {0, 1, 0}, {0, -1, 0},
+                {0, 0, 1}, {0, 0, -1}
+        };
+        for (int[] dir : directions) {
+            for (int r = 0; r <= radius; r++) {
+                int nx = x + dir[0] * r;
+                int ny = y + dir[1] * r;
+                int nz = z + dir[2] * r;
+                if (inBounds(nx, ny, nz)) { // verificar se está dentro dos limites do mund
+                    VoxelBlockType type = palette.get(getBlock(nx, ny, nz)); // verificar o bloco nessa posição
+                    if (blockType != null) {
+                        if (type.getName() != blockType) continue;
+                    }
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 
-    public int getTopSolidY(int x, int z) {
+    public int getTopSolidY(int x, int z, String blockType) {
         if (x < 0 || z < 0 || x >= sizeX || z >= sizeZ) return -1;
         for (int y = sizeY - 1; y >= 0; y--) {
-            if (palette.get(getBlock(x, y, z)).isSolid()) return y;
+            VoxelBlockType type = palette.get(getBlock(x, y, z));
+            if (blockType != null) { // se houver parametro de tipo de bloco, verificar se corresponde
+             if (type.getName() != blockType) continue;
+            }
+            if (type.isSolid()) return y;
         }
         return -1;
     }
@@ -301,7 +329,7 @@ public class VoxelWorld {
 
         // Folhas
         for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
+            for (int dy = (int) -(radius/2); dy <= radius; dy++) {
                 for (int dz = -radius; dz <= radius; dz++) {
                     int dist = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
                     if (dist <= radius + 1) {
