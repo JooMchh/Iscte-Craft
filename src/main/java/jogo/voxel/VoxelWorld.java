@@ -315,7 +315,7 @@ public class VoxelWorld {
         return x >= 0 && y >= 0 && z >= 0 && x < sizeX && y < sizeY && z < sizeZ;
     }
 
-    public void placeTree(int x, int y, int z) {
+    public void placeTree(int x, int y, int z) { //função place tree para as arvores
         int trunkHeight = 4 + (int)(Math.random() * 3);
 
         // Tronco

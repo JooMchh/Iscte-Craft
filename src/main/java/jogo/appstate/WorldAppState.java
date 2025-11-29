@@ -11,7 +11,10 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
+
+import java.util.Vector;
 
 public class WorldAppState extends BaseAppState {
 
@@ -84,6 +87,20 @@ public class WorldAppState extends BaseAppState {
                     voxelWorld.rebuildDirtyChunks(physicsSpace);
                     playerAppState.refreshPhysics();
                 }
+            });
+        }
+        if (input != null && input.isMouseCaptured() && input.consumePlaceRequested()) { // Le place block
+            var pick = voxelWorld.pickFirstSolid(cam, 6f);
+            pick.ifPresent(hit -> {
+                VoxelWorld.Vector3i cell = hit.cell;
+                VoxelWorld.Vector3i placePos = new VoxelWorld.Vector3i(
+                        cell.x + (int) hit.normal.x,
+                        cell.y + (int) hit.normal.y,
+                        cell.z + (int) hit.normal.z
+                );
+                voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, VoxelPalette.GRASS_ID);
+                voxelWorld.rebuildDirtyChunks(physicsSpace);
+                playerAppState.refreshPhysics();
             });
         }
         if (input != null && input.consumeToggleShadingRequested()) {
