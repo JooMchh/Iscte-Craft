@@ -94,6 +94,11 @@ public class PlayerAppState extends BaseAppState {
             respawn();
         }
 
+        // self damage on request
+        if (input.consumeDamageRequested()) {
+            if (player != null) damagePlayer(10);
+        }
+
         // pause controls if mouse not captured
         if (!input.isMouseCaptured()) {
             characterControl.setWalkDirection(Vector3f.ZERO);
@@ -132,14 +137,36 @@ public class PlayerAppState extends BaseAppState {
 
         // update light to follow head
         if (playerLight != null) playerLight.setPosition(playerNode.getWorldTranslation().add(0, eyeHeight, 0));
+
+        // update HealthBar
+
+    }
+
+    private void onDeath() {
+        player.setHealth(100);
+        player.setMAX_HEALTH(100);
     }
 
     private void respawn() {
         characterControl.setWalkDirection(Vector3f.ZERO);
         characterControl.warp(spawnPosition);
+        onDeath();
         // Reset look
-        this.pitch = -0.35f;
+        this.pitch = 0f;
         applyViewToCamera();
+    }
+
+    public void damagePlayer(int damage) {
+        if (player == null) return;
+        player.damage(damage);
+
+        if (player.isDead()) {
+            respawn();
+        }
+
+        HudAppState hud = getStateManager().getState(HudAppState.class);
+        if (hud == null) return;
+        hud.updateHealthBar(player.getHealth(), player.getMAX_HEALTH());
     }
 
     private Vector3f computeWorldMove(Vector3f inputXZ) {

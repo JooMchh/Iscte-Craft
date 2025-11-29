@@ -22,6 +22,7 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     private volatile boolean toggleShadingRequested;
     private volatile boolean respawnRequested;
     private volatile boolean interactRequested;
+    private volatile boolean damageRequested;
     private float mouseDX, mouseDY;
     private boolean mouseCaptured = true;
 
@@ -52,8 +53,10 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("Respawn", new KeyTrigger(KeyInput.KEY_R));
         // Interact (E)
         im.addMapping("Interact", new KeyTrigger(KeyInput.KEY_E));
+        // Self-Damage (K)
+        im.addMapping("Damage", new KeyTrigger(KeyInput.KEY_K));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -76,6 +79,7 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("ToggleShading");
         im.deleteMapping("Respawn");
         im.deleteMapping("Interact");
+        im.deleteMapping("Damage");
         im.removeListener(this);
     }
 
@@ -115,6 +119,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             }
             case "Interact" -> {
                 if (isPressed && mouseCaptured) interactRequested = true;
+            }
+            case "Damage" -> {
+                if (isPressed) damageRequested = true;
             }
         }
     }
@@ -173,6 +180,12 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     public boolean consumeInteractRequested() {
         boolean r = interactRequested;
         interactRequested = false;
+        return r;
+    }
+
+    public boolean consumeDamageRequested() {
+        boolean r = damageRequested;
+        damageRequested = false;
         return r;
     }
 

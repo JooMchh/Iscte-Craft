@@ -7,12 +7,19 @@ import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.scene.Node;
+import com.jme3.ui.Picture;
 
 public class HudAppState extends BaseAppState {
 
     private final Node guiNode;
     private final AssetManager assetManager;
     private BitmapText crosshair;
+    private Picture healthBarBorder;
+    private Picture healthBarBG;
+    private Picture healthBar;
+    private BitmapText healthBarText;
+    private float hbWidth = 284f;
+    private float hbHeight = 32f;
 
     public HudAppState(Node guiNode, AssetManager assetManager) {
         this.guiNode = guiNode;
@@ -21,13 +28,37 @@ public class HudAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
+        // font
         BitmapFont font = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        BitmapFont pixelFont = assetManager.loadFont("Interface/Fonts/AlagardFNT.fnt");
+        // crossHair
         crosshair = new BitmapText(font, false);
         crosshair.setText("+");
         crosshair.setSize(font.getCharSet().getRenderedSize() * 2f);
         guiNode.attachChild(crosshair);
         centerCrosshair();
         System.out.println("HudAppState initialized: crosshair attached");
+        // Health bar stuff
+        healthBarBG = new Picture("Health Bar Background");
+        healthBarBG.setImage(assetManager, "Textures/healthbarborderBG.png", true);
+        healthBarBG.setWidth(hbWidth);
+        healthBarBG.setHeight(hbHeight);
+        healthBar = new Picture("Health Bar");
+        healthBar.setImage(assetManager, "Textures/healthbar.png", true);
+        healthBar.setWidth(hbWidth);
+        healthBar.setHeight(hbHeight);
+        healthBarBorder = new Picture("Health Bar Border");
+        healthBarBorder.setImage(assetManager, "Textures/healthbarborder.png", true);
+        healthBarBorder.setWidth(hbWidth);
+        healthBarBorder.setHeight(hbHeight);
+        healthBarText = new BitmapText(pixelFont, false);
+        healthBarText.setSize(font.getCharSet().getRenderedSize());
+        centerHealthBar();
+        updateHealthBar(100, 100);
+        guiNode.attachChild(healthBarBG);
+        guiNode.attachChild(healthBar);
+        guiNode.attachChild(healthBarBorder);
+        guiNode.attachChild(healthBarText);
     }
 
     private void centerCrosshair() {
@@ -39,10 +70,37 @@ public class HudAppState extends BaseAppState {
         crosshair.setLocalTranslation(x, y, 0);
     }
 
+    private void centerHealthBar() {
+        SimpleApplication sapp = (SimpleApplication) getApplication();
+        int w = sapp.getCamera().getWidth();
+        int h = sapp.getCamera().getHeight();
+        // Background
+        float x = 20f;
+        float y = h - healthBarBG.getHeight() - 20f;
+        healthBarBG.setLocalTranslation(x, y, 0);
+        // Border
+        healthBarBorder.setLocalTranslation(x, y, 2);
+        // The Bar
+        healthBar.setLocalTranslation(x, y, 1);
+        // health text
+        float barXCenter = x + (healthBarBG.getWidth() / 2f);
+        float barYCenter = y + (healthBarBG.getHeight() / 2f);
+        float textX = barXCenter - (healthBarText.getLineWidth() / 2f);
+        float textY = barYCenter + (healthBarText.getLineHeight() / 2f);
+        healthBarText.setLocalTranslation(textX, textY, 3);
+    }
+
+    public void updateHealthBar(float health, float maxHealth) {
+        float barRatio = (health / maxHealth);
+        healthBar.setWidth(hbWidth*barRatio);
+        healthBarText.setText((int) health + " / "+ (int) maxHealth);
+    }
+
     @Override
     public void update(float tpf) {
         // keep centered (cheap)
         centerCrosshair();
+        centerHealthBar();
     }
 
     @Override

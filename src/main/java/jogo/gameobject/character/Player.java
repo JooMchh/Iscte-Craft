@@ -5,4 +5,5 @@ public class Player extends Character {
     public Player() {
         super("Player");
     }
+
 }
