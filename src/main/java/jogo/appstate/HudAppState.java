@@ -53,12 +53,13 @@ public class HudAppState extends BaseAppState {
         healthBarBorder.setHeight(hbHeight);
         healthBarText = new BitmapText(pixelFont, false);
         healthBarText.setSize(font.getCharSet().getRenderedSize());
-        centerHealthBar();
-        updateHealthBar(100, 100);
         guiNode.attachChild(healthBarBG);
         guiNode.attachChild(healthBar);
         guiNode.attachChild(healthBarBorder);
         guiNode.attachChild(healthBarText);
+        centerHealthBar();
+        updateHealthBar(100, 100);
+        System.out.println("HudAppState initialized: health bar attached");
     }
 
     private void centerCrosshair() {
@@ -94,6 +95,7 @@ public class HudAppState extends BaseAppState {
         float barRatio = (health / maxHealth);
         healthBar.setWidth(hbWidth*barRatio);
         healthBarText.setText((int) health + " / "+ (int) maxHealth);
+        System.out.println("Health bar updated!");
     }
 
     @Override

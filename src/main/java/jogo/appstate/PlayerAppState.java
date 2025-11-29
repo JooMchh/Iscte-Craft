@@ -81,7 +81,7 @@ public class PlayerAppState extends BaseAppState {
         // initialize camera
         cam.setFrustumPerspective(60f, (float) cam.getWidth() / cam.getHeight(), 0.05f, 500f);
         // Look slightly downward so ground is visible immediately
-        this.pitch = -0.35f;
+        this.pitch = 0.35f;
         applyViewToCamera();
     }
 
@@ -145,6 +145,7 @@ public class PlayerAppState extends BaseAppState {
     private void onDeath() {
         player.setHealth(100);
         player.setMAX_HEALTH(100);
+        System.out.println("PlayerAppState onDeath: Player has died!");
     }
 
     private void respawn() {
@@ -152,13 +153,14 @@ public class PlayerAppState extends BaseAppState {
         characterControl.warp(spawnPosition);
         onDeath();
         // Reset look
-        this.pitch = 0f;
+        this.pitch = 0.35f;
         applyViewToCamera();
     }
 
     public void damagePlayer(int damage) {
         if (player == null) return;
         player.damage(damage);
+        System.out.println("PlayerAppState damagePlayer: Player took " + damage + " Damage!");
 
         if (player.isDead()) {
             respawn();

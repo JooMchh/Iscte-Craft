@@ -17,6 +17,10 @@ public abstract class VoxelBlockType {
     /** Whether this block is physically solid (collides/occludes). */
     public boolean isSolid() { return true; }
 
+    public boolean isBreakable() { return true; }
+
+    public boolean canCollide() { return true; }
+
     /**
      * Returns the Material for this block type. Override in subclasses for custom materials.
      */

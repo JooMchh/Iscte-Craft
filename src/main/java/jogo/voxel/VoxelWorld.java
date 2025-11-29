@@ -111,26 +111,33 @@ public class VoxelWorld {
         PerlinNoise perlin = new PerlinNoise(seed);
 
         Vector3i pos = new Vector3i(getRecommendedSpawn());
+        // variáveis de world generation
         int radius = 128;
         int treeCooldown = 15;
-
+        int dirtThickness = 2;
+        int grassThickness = 1;
+        int caveHeight = 3;
+        int liquidLevel = 18;
+        int deepLiquidLevel = 2;
+        // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
 
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 5);
-                int dirtThickness = 2;
-                int grassThickness = 1;
-                int caveHeight = 3;
 
                 for (int y = 0; y <= height; y++) {
-                    double caveNoise = perlin.noise(x * 0.05, y * 0.05, z * 0.05);
+                    double caveNoise = perlin.noise(x * .05, y * .05, z * .05);
 
                     if (y == 0) {
                         setBlock(x, y, z, VoxelPalette.BEDROCK_ID);
                     } else if (caveNoise > 0.3 && y <= height - caveHeight - grassThickness - dirtThickness) {
-                        System.out.println("CAVE at " + x + "," + y + "," + z);
-                        setBlock(x, y, z, VoxelPalette.AIR_ID);
+                        //System.out.println("CAVE at " + x + "," + y + "," + z);
+                        if (y <= deepLiquidLevel) {
+                            setBlock(x, y, z, VoxelPalette.LAVA_ID);
+                        } else {
+                            setBlock(x, y, z, VoxelPalette.AIR_ID);
+                        }
                     } else if (y >= height - grassThickness) {
                         setBlock(x, y, z, VoxelPalette.GRASS_ID);
                     } else if (y >= height - dirtThickness - grassThickness) {
@@ -140,6 +147,19 @@ public class VoxelWorld {
                     }
                 }
 
+                // Lake generation
+                double biomeNoise = perlin.noise(x * .01, z * .01);
+                byte liquidID = VoxelPalette.WATER_ID;
+                if (biomeNoise > 0.2) {
+                    System.out.println("Poison at " + x + "," + z);
+                    liquidID = VoxelPalette.POISON_ID;
+                }
+
+                for (int y = height; y <= liquidLevel; y++) {
+                    setBlock(x, y, z, liquidID);
+                }
+
+                // Tree generation
                 int topY = getTopSolidY(x, z, "grass");
                 if (Math.random() < 0.002 && checkSurroundings(x, topY+1, z, 5, "wood") == 0) { // 2% + verificar espaço
                     if (topY > 0)
@@ -236,7 +256,7 @@ public class VoxelWorld {
             for (int cy = 0; cy < chunkCountY; cy++) {
                 for (int cz = 0; cz < chunkCountZ; cz++) {
                     Chunk chunk = chunks[cx][cy][cz];
-                    chunk.updatePhysics(space);
+                    chunk.updatePhysics(space, palette);
                 }
             }
         }
@@ -408,7 +428,7 @@ public class VoxelWorld {
                     if (chunk.isDirty()) {
                         System.out.println("Rebuilding chunk: " + cx + "," + cy + "," + cz);
                         chunk.buildMesh(assetManager, palette);
-                        chunk.updatePhysics(physicsSpace);
+                        chunk.updatePhysics(physicsSpace, palette);
                         chunk.clearDirty();
                         rebuilt++;
                     }

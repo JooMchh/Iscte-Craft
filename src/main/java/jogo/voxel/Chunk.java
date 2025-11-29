@@ -102,7 +102,7 @@ public class Chunk {
     /**
      * Updates the physics control for this chunk. Call after mesh rebuild.
      */
-    public void updatePhysics(PhysicsSpace space) {
+    public void updatePhysics(PhysicsSpace space, VoxelPalette palette) {
         if (rigidBody != null) {
             System.out.println("Removing old RigidBodyControl for chunk ["+chunkX+","+chunkY+","+chunkZ+"]");
             space.remove(rigidBody);
@@ -124,11 +124,25 @@ public class Chunk {
                     tempNode.attachChild(gClone);
                 }
             }
-            CollisionShape shape = CollisionShapeFactory.createMeshShape(tempNode);
-            rigidBody = new RigidBodyControl(shape, 0f);
-            node.addControl(rigidBody);
-            space.add(rigidBody);
-            System.out.println("Added new RigidBodyControl for chunk ["+chunkX+","+chunkY+","+chunkZ+"]");
+            // remover o que não tem colisão
+            for (int i = tempNode.getQuantity() - 1; i >= 0; i--) {
+                Geometry g = (Geometry) tempNode.getChild(i);
+                String[] parts = g.getName().split("_");
+                try {
+                    byte id = Byte.parseByte(parts[parts.length - 1]);
+                    if (!palette.get(id).canCollide()) {
+                        tempNode.detachChildAt(i);
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+
+            if (tempNode.getQuantity() > 0) { // Só criar rigidBody se sobrar geometry
+                CollisionShape shape = CollisionShapeFactory.createMeshShape(tempNode);
+                rigidBody = new RigidBodyControl(shape, 0f);
+                node.addControl(rigidBody);
+                space.add(rigidBody);
+                System.out.println("Added new RigidBodyControl for chunk ["+chunkX+","+chunkY+","+chunkZ+"]");
+            }
         }
     }
 

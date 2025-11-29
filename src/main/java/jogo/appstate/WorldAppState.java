@@ -11,9 +11,11 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class WorldAppState extends BaseAppState {
@@ -28,6 +30,7 @@ public class WorldAppState extends BaseAppState {
     // world root for easy cleanup
     private Node worldNode;
     private VoxelWorld voxelWorld;
+    private VoxelPalette palette;
     private com.jme3.math.Vector3f spawnPosition;
 
     public WorldAppState(Node rootNode, AssetManager assetManager, PhysicsSpace physicsSpace, Camera cam, InputAppState input) {
@@ -67,6 +70,8 @@ public class WorldAppState extends BaseAppState {
 
         // compute recommended spawn
         spawnPosition = voxelWorld.getRecommendedSpawn();
+
+        this.palette = VoxelPalette.defaultPalette();
     }
 
     public com.jme3.math.Vector3f getRecommendedSpawnPosition() {
@@ -83,6 +88,11 @@ public class WorldAppState extends BaseAppState {
             var pick = voxelWorld.pickFirstSolid(cam, 6f);
             pick.ifPresent(hit -> {
                 VoxelWorld.Vector3i cell = hit.cell;
+                VoxelBlockType type = palette.get(voxelWorld.getBlock(cell.x, cell.y, cell.z));
+                if (!type.isBreakable()) {
+                    System.out.println("WorldAppState update: Player cannot break " + type.getName());
+                    return;
+                }
                 if (voxelWorld.breakAt(cell.x, cell.y, cell.z)) {
                     voxelWorld.rebuildDirtyChunks(physicsSpace);
                     playerAppState.refreshPhysics();
@@ -99,6 +109,7 @@ public class WorldAppState extends BaseAppState {
                         cell.z + (int) hit.normal.z
                 );
                 voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, VoxelPalette.GRASS_ID);
+                System.out.println("WorldAppState update: Block placed by Player at (" + placePos.x + "," + placePos.y + "," + placePos.z + ").");
                 voxelWorld.rebuildDirtyChunks(physicsSpace);
                 playerAppState.refreshPhysics();
             });
