@@ -6,6 +6,8 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
 import jogo.voxel.VoxelBlockType;
 
+import java.awt.*;
+
 public class GrassBlockType extends VoxelBlockType {
     public GrassBlockType() {
         super("grass");

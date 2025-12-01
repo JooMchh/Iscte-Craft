@@ -55,8 +55,10 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("Interact", new KeyTrigger(KeyInput.KEY_E));
         // Self-Damage (K)
         im.addMapping("Damage", new KeyTrigger(KeyInput.KEY_K));
+        // Set FullScreen (F11)
+        im.addMapping("Fullscreen", new KeyTrigger(KeyInput.KEY_F11));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -80,6 +82,7 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("Respawn");
         im.deleteMapping("Interact");
         im.deleteMapping("Damage");
+        im.deleteMapping("Fullscreen");
         im.removeListener(this);
     }
 
@@ -122,6 +125,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             }
             case "Damage" -> {
                 if (isPressed) damageRequested = true;
+            }
+            case "Fullscreen" -> {
+
             }
         }
     }

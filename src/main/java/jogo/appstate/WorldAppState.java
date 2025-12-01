@@ -108,7 +108,7 @@ public class WorldAppState extends BaseAppState {
                         cell.y + (int) hit.normal.y,
                         cell.z + (int) hit.normal.z
                 );
-                voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, VoxelPalette.GRASS_ID);
+                voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, VoxelPalette.DIRT_ID);
                 System.out.println("WorldAppState update: Block placed by Player at (" + placePos.x + "," + placePos.y + "," + placePos.z + ").");
                 voxelWorld.rebuildDirtyChunks(physicsSpace);
                 playerAppState.refreshPhysics();

@@ -2,6 +2,7 @@ package jogo.voxel.blocks;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
 import jogo.voxel.VoxelBlockType;
@@ -11,6 +12,11 @@ public class PoisonBlockType extends VoxelBlockType {
         super("poison");
     }
     // isSolid() inherits true from base
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
 
     @Override
     public boolean canCollide() { return false; }
@@ -24,6 +30,7 @@ public class PoisonBlockType extends VoxelBlockType {
         m.setColor("Diffuse", ColorRGBA.White);
         m.setColor("Specular", ColorRGBA.White.mult(0.02f)); // reduced specular
         m.setFloat("Shininess", 32f); // tighter, less intense highlight
+        m.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         return m;
     }
 }

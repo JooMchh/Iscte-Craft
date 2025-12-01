@@ -6,8 +6,12 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+
+import java.awt.*;
 
 public class HudAppState extends BaseAppState {
 
@@ -18,6 +22,7 @@ public class HudAppState extends BaseAppState {
     private Picture healthBarBG;
     private Picture healthBar;
     private BitmapText healthBarText;
+    private Picture hudLiquidColorEffect;
     private float hbWidth = 284f;
     private float hbHeight = 32f;
 
@@ -36,19 +41,18 @@ public class HudAppState extends BaseAppState {
         crosshair.setText("+");
         crosshair.setSize(font.getCharSet().getRenderedSize() * 2f);
         guiNode.attachChild(crosshair);
-        centerCrosshair();
         System.out.println("HudAppState initialized: crosshair attached");
         // Health bar stuff
         healthBarBG = new Picture("Health Bar Background");
-        healthBarBG.setImage(assetManager, "Textures/healthbarborderBG.png", true);
+        healthBarBG.setImage(assetManager, "Interface/healthbarborderBG.png", true);
         healthBarBG.setWidth(hbWidth);
         healthBarBG.setHeight(hbHeight);
         healthBar = new Picture("Health Bar");
-        healthBar.setImage(assetManager, "Textures/healthbar.png", true);
+        healthBar.setImage(assetManager, "Interface/healthbar.png", true);
         healthBar.setWidth(hbWidth);
         healthBar.setHeight(hbHeight);
         healthBarBorder = new Picture("Health Bar Border");
-        healthBarBorder.setImage(assetManager, "Textures/healthbarborder.png", true);
+        healthBarBorder.setImage(assetManager, "Interface/healthbarborder.png", true);
         healthBarBorder.setWidth(hbWidth);
         healthBarBorder.setHeight(hbHeight);
         healthBarText = new BitmapText(pixelFont, false);
@@ -57,24 +61,22 @@ public class HudAppState extends BaseAppState {
         guiNode.attachChild(healthBar);
         guiNode.attachChild(healthBarBorder);
         guiNode.attachChild(healthBarText);
-        centerHealthBar();
         updateHealthBar(100, 100);
         System.out.println("HudAppState initialized: health bar attached");
+        // Screen effects
+        hudLiquidColorEffect = new Picture(";LiquidHudEffect");
+        hudLiquidColorEffect.setImage(assetManager, "Interface/Colorhudeffect.png", true);
+        hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
+        guiNode.attachChild(hudLiquidColorEffect);
     }
 
-    private void centerCrosshair() {
-        SimpleApplication sapp = (SimpleApplication) getApplication();
-        int w = sapp.getCamera().getWidth();
-        int h = sapp.getCamera().getHeight();
+    private void centerCrosshair(int w, int h) {
         float x = (w - crosshair.getLineWidth()) / 2f;
         float y = (h + crosshair.getLineHeight()) / 2f;
         crosshair.setLocalTranslation(x, y, 0);
     }
 
-    private void centerHealthBar() {
-        SimpleApplication sapp = (SimpleApplication) getApplication();
-        int w = sapp.getCamera().getWidth();
-        int h = sapp.getCamera().getHeight();
+    private void centerHealthBar(int h) {
         // Background
         float x = 20f;
         float y = h - healthBarBG.getHeight() - 20f;
@@ -91,6 +93,14 @@ public class HudAppState extends BaseAppState {
         healthBarText.setLocalTranslation(textX, textY, 3);
     }
 
+    public void centerHudEffects(int w, int h) {
+        float x = (w / 2f);
+        float y = (h / 2f);
+        crosshair.setLocalTranslation(x, y, 0);
+        hudLiquidColorEffect.setWidth(w);
+        hudLiquidColorEffect.setHeight(h);
+    }
+
     public void updateHealthBar(float health, float maxHealth) {
         float barRatio = (health / maxHealth);
         healthBar.setWidth(hbWidth*barRatio);
@@ -98,11 +108,34 @@ public class HudAppState extends BaseAppState {
         System.out.println("Health bar updated!");
     }
 
+    public void updateLiquidEffect(byte liquid, boolean inLiquid) { // method with case para mudar e mostrar hud effect under liquid
+        if (inLiquid) {
+            switch (liquid) {
+                case 7:
+                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0.5f, 0.09f, 0.7f, .55f));
+                    break;
+                case 8:
+                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(1f, 0.13f, 0f, .55f));
+                    break;
+                case 9:
+                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0f, 0.13f, 1f, .35f));
+                    break;
+            }
+            hudLiquidColorEffect.setCullHint(Spatial.CullHint.Never);
+        } else {
+            hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
+        }
+    }
+
     @Override
     public void update(float tpf) {
         // keep centered (cheap)
-        centerCrosshair();
-        centerHealthBar();
+        SimpleApplication sapp = (SimpleApplication) getApplication();
+        int w = sapp.getCamera().getWidth();
+        int h = sapp.getCamera().getHeight();
+        centerCrosshair(w, h);
+        centerHealthBar(h);
+        centerHudEffects(w, h);
     }
 
     @Override

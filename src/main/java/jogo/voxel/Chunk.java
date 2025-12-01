@@ -10,6 +10,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import jogo.framework.math.Vec3;
+import jogo.util.GeometryEx;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,18 +66,17 @@ public class Chunk {
                 for (int z = 0; z < SIZE; z++) {
                     byte id = vox[x][y][z];
                     if (id == VoxelPalette.AIR_ID) continue;
-                    if (!palette.get(id).isSolid()) continue;
                     MeshBuilder builder = builders.get(id);
                     int wx = chunkX * SIZE + x;
                     int wy = chunkY * SIZE + y;
                     int wz = chunkZ * SIZE + z;
                     // Only add faces if neighbor is air or out of bounds
-                    if (!isSolid(wx+1,wy,wz,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PX);
-                    if (!isSolid(wx-1,wy,wz,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NX);
-                    if (!isSolid(wx,wy+1,wz,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PY);
-                    if (!isSolid(wx,wy-1,wz,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NY);
-                    if (!isSolid(wx,wy,wz+1,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PZ);
-                    if (!isSolid(wx,wy,wz-1,palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NZ);
+                    if (shouldRenderFace(wx+1,wy,wz, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PX);
+                    if (shouldRenderFace(wx-1,wy,wz, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NX);
+                    if (shouldRenderFace(wx,wy+1,wz, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PY);
+                    if (shouldRenderFace(wx,wy-1,wz, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NY);
+                    if (shouldRenderFace(wx,wy,wz+1, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.PZ);
+                    if (shouldRenderFace(wx,wy,wz-1, id, palette)) builder.addVoxelFace(wx,wy,wz, MeshBuilder.Face.NZ);
                     if (!firstBlockPos.containsKey(id)) firstBlockPos.put(id, new Vec3(wx, wy, wz));
                 }
             }
@@ -87,7 +87,7 @@ public class Chunk {
             Mesh mesh = meshBuilder.build();
             if (mesh.getTriangleCount() > 0) {
                 byte id = entry.getKey();
-                Geometry g = new Geometry("chunk_"+chunkX+"_"+chunkY+"_"+chunkZ+"_"+id, mesh);
+                GeometryEx g = new GeometryEx("chunk_"+chunkX+"_"+chunkY+"_"+chunkZ+"_"+ id, mesh, id);
                 Vec3 blockPos = firstBlockPos.getOrDefault(id, new Vec3(chunkX*SIZE, chunkY*SIZE, chunkZ*SIZE));
                 Material mat = palette.get(id).getMaterial(assetManager, blockPos);
                 g.setMaterial(mat);
@@ -115,25 +115,21 @@ public class Chunk {
                 System.out.println("Warning: Chunk node ["+chunkX+","+chunkY+","+chunkZ+"] not attached to world node before physics update!");
             }
             // Clone meshes for collision shape to avoid Bullet caching issues
-            Node tempNode = node.clone(false); // shallow clone
+            Node tempNode = new Node("TempCollision"); // shallow clone
             for (int i = 0; i < node.getQuantity(); i++) {
-                if (node.getChild(i) instanceof Geometry) {
-                    Geometry g = (Geometry) node.getChild(i);
+                if (node.getChild(i) instanceof GeometryEx) {
+                    GeometryEx g = (GeometryEx) node.getChild(i);
+
+                    VoxelBlockType block = palette.get(g.getBlock_id());
+                    if (!block.canCollide()) {
+                        continue;
+                    }
+
                     Geometry gClone = g.clone(false);
                     gClone.setMesh(g.getMesh().deepClone());
                     tempNode.attachChild(gClone);
+
                 }
-            }
-            // remover o que não tem colisão
-            for (int i = tempNode.getQuantity() - 1; i >= 0; i--) {
-                Geometry g = (Geometry) tempNode.getChild(i);
-                String[] parts = g.getName().split("_");
-                try {
-                    byte id = Byte.parseByte(parts[parts.length - 1]);
-                    if (!palette.get(id).canCollide()) {
-                        tempNode.detachChildAt(i);
-                    }
-                } catch (Exception e) { e.printStackTrace(); }
             }
 
             if (tempNode.getQuantity() > 0) { // Só criar rigidBody se sobrar geometry
@@ -157,5 +153,31 @@ public class Chunk {
         if (lx < 0 || ly < 0 || lz < 0 || lx >= SIZE || ly >= SIZE || lz >= SIZE) return false;
         byte id = vox[lx][ly][lz];
         return id != VoxelPalette.AIR_ID && palette.get(id).isSolid();
+    }
+
+    private boolean shouldRenderFace(int nX, int nY, int nZ, byte id, VoxelPalette palette) {
+        boolean neighborSolid = isSolid(nX, nY, nZ, palette);
+        boolean localSolid = palette.get(id).isSolid();
+
+        if (localSolid) {
+            return !neighborSolid; // render if neighbor not solid
+        } else {
+            if (neighborSolid) return false;
+
+            byte neighborId = getLocalId(nX, nY, nZ);
+            if (neighborId == id) return false;
+
+            return true;
+        }
+    }
+
+    private byte getLocalId(int wx, int wy, int wz) {
+        int lx = wx - chunkX * SIZE;
+        int ly = wy - chunkY * SIZE;
+        int lz = wz - chunkZ * SIZE;
+        if (lx >= 0 && lx < SIZE && ly >= 0 && ly < SIZE && lz >= 0 && lz < SIZE) {
+            return vox[lx][ly][lz];
+        }
+        return VoxelPalette.AIR_ID;
     }
 }

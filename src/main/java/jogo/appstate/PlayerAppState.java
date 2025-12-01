@@ -11,7 +11,13 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import jogo.framework.math.Vec3;
 import jogo.gameobject.character.Player;
+import jogo.voxel.VoxelBlockType;
+import jogo.voxel.VoxelPalette;
+import jogo.voxel.VoxelWorld;
+
+import java.util.Vector;
 
 public class PlayerAppState extends BaseAppState {
 
@@ -25,6 +31,7 @@ public class PlayerAppState extends BaseAppState {
     private Node playerNode;
     private BetterCharacterControl characterControl;
     private Player player;
+    private VoxelPalette palette;
 
     // view angles
     private float yaw = 0f;
@@ -38,6 +45,8 @@ public class PlayerAppState extends BaseAppState {
 
     private Vector3f spawnPosition = new Vector3f(25.5f, 12f, 25.5f);
     private PointLight playerLight;
+    private boolean previousInLiquid = false;
+    private byte previousBlockInPlayer = 0;
 
     public PlayerAppState(Node rootNode, AssetManager assetManager, Camera cam, InputAppState input, PhysicsSpace physicsSpace, WorldAppState world) {
         this.rootNode = rootNode;
@@ -83,10 +92,22 @@ public class PlayerAppState extends BaseAppState {
         // Look slightly downward so ground is visible immediately
         this.pitch = 0.35f;
         applyViewToCamera();
+
+        // setup palette
+        palette = world.getVoxelWorld().getPalette();
     }
 
     @Override
     public void update(float tpf) {
+        // get currentHud
+        HudAppState hud = getStateManager().getState(HudAppState.class);
+
+        // player eye Position
+        Vector3f eyePos = playerNode.getWorldTranslation().add(0, eyeHeight, 0);
+        int bx = (int) Math.floor(eyePos.x);
+        int by = (int) Math.floor(eyePos.y);
+        int bz = (int) Math.floor(eyePos.z);
+
         // respawn on request
         if (input.consumeRespawnRequested()) {
             // refresh spawn from world in case terrain changed
@@ -96,7 +117,7 @@ public class PlayerAppState extends BaseAppState {
 
         // self damage on request
         if (input.consumeDamageRequested()) {
-            if (player != null) damagePlayer(10);
+            if (player != null) damagePlayer(10, "Admin");
         }
 
         // pause controls if mouse not captured
@@ -136,10 +157,23 @@ public class PlayerAppState extends BaseAppState {
         applyViewToCamera();
 
         // update light to follow head
-        if (playerLight != null) playerLight.setPosition(playerNode.getWorldTranslation().add(0, eyeHeight, 0));
+        if (playerLight != null) playerLight.setPosition(eyePos);
 
-        // update HealthBar
+        // Handle Player Iframes
 
+        // update Liquid
+        boolean inLiquid = false;
+
+        byte blockInPlayer = world.getVoxelWorld().getBlock(bx, by, bz);
+        if (blockInPlayer == palette.WATER_ID || blockInPlayer == palette.POISON_ID || blockInPlayer == palette.LAVA_ID) {
+            inLiquid = true;
+        }
+
+        if (inLiquid != previousInLiquid || blockInPlayer != previousBlockInPlayer) {
+            previousInLiquid = inLiquid;
+            previousBlockInPlayer = blockInPlayer;
+            hud.updateLiquidEffect(blockInPlayer, inLiquid);
+        }
     }
 
     private void onDeath() {
@@ -157,7 +191,7 @@ public class PlayerAppState extends BaseAppState {
         applyViewToCamera();
     }
 
-    public void damagePlayer(int damage) {
+    public void damagePlayer(int damage, String source) {
         if (player == null) return;
         player.damage(damage);
         System.out.println("PlayerAppState damagePlayer: Player took " + damage + " Damage!");

@@ -24,9 +24,10 @@ public class Jogo extends SimpleApplication {
         Jogo app = new Jogo();
         app.setShowSettings(true); // show settings dialog
         AppSettings settings = new AppSettings(true);
-        settings.setTitle("Test");
+        settings.setTitle("Iscte Craft");
         settings.setWidth(1280);
         settings.setHeight(720);
+        //settings.setFullscreen(true);
         settings.setGammaCorrection(true); // enable sRGB gamma-correct rendering
         app.setSettings(settings);
         app.start();
