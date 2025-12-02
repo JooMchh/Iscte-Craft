@@ -56,7 +56,9 @@ public class Chunk {
             if (i == VoxelPalette.AIR_ID) continue;
             MeshBuilder mb = new MeshBuilder();
             // Randomize UVs only for dirt to add variation without per-block materials
-            mb.setRandomizeUV(true);
+            if (i == VoxelPalette.DIRT_ID || i == VoxelPalette.GRASS_ID) {
+                mb.setRandomizeUV(true);
+            }
             builders.put((byte)i, mb);
         }
         // Track first block position for each type
@@ -90,6 +92,12 @@ public class Chunk {
                 GeometryEx g = new GeometryEx("chunk_"+chunkX+"_"+chunkY+"_"+chunkZ+"_"+ id, mesh, id);
                 Vec3 blockPos = firstBlockPos.getOrDefault(id, new Vec3(chunkX*SIZE, chunkY*SIZE, chunkZ*SIZE));
                 Material mat = palette.get(id).getMaterial(assetManager, blockPos);
+                if (!palette.get(id).isSolid()) {
+                    g.setQueueBucket(com.jme3.renderer.queue.RenderQueue.Bucket.Transparent);
+                }
+                else {
+                    g.setQueueBucket(com.jme3.renderer.queue.RenderQueue.Bucket.Opaque);
+                }
                 g.setMaterial(mat);
                 node.attachChild(g);
                 geomCount++;

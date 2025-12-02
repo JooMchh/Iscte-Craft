@@ -5,9 +5,9 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
-import jogo.voxel.VoxelBlockType;
+import jogo.gameobject.character.Character;
 
-public class LavaBlockType extends VoxelBlockType {
+public class LavaBlockType extends HazardBlockType {
     public LavaBlockType() {
         super("lava");
     }
@@ -33,4 +33,10 @@ public class LavaBlockType extends VoxelBlockType {
         m.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         return m;
     }
+
+    @Override
+    public void onContact(Character chr) {
+        chr.damage(5);
+    }
+
 }

@@ -18,12 +18,12 @@ public class BedrockBlockType extends VoxelBlockType {
 
     @Override
     public Material getMaterial(AssetManager assetManager) {
-        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/Bedrock.jpg");
+        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/Bedrock.png");
         Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         m.setTexture("DiffuseMap", tex);
         m.setBoolean("UseMaterialColors", true);
         m.setColor("Diffuse", ColorRGBA.White);
-        m.setColor("Specular", ColorRGBA.White.mult(0.02f)); // reduced specular
+        m.setColor("Specular", ColorRGBA.White.mult(0f)); // reduced specular
         m.setFloat("Shininess", 32f); // tighter, less intense highlight
         return m;
     }

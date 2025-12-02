@@ -2,6 +2,7 @@ package jogo.voxel;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
+import jogo.gameobject.character.Character;
 
 public abstract class VoxelBlockType {
     private final String name;
@@ -16,10 +17,12 @@ public abstract class VoxelBlockType {
 
     /** Whether this block is physically solid (collides/occludes). */
     public boolean isSolid() { return true; }
-
+    // whether this block is breakable
     public boolean isBreakable() { return true; }
-
+    // whether this block can collide
     public boolean canCollide() { return true; }
+    // whether this block is a hazard
+    public boolean isHazard() { return false; }
 
     /**
      * Returns the Material for this block type. Override in subclasses for custom materials.
@@ -34,4 +37,6 @@ public abstract class VoxelBlockType {
     public Material getMaterial(AssetManager assetManager, jogo.framework.math.Vec3 blockPos) {
         return getMaterial(assetManager);
     }
+
+    public void onContact(Character chr) { return; };
 }

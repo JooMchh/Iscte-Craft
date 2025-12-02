@@ -21,7 +21,7 @@ public class GrassBlockType extends VoxelBlockType {
         m.setTexture("DiffuseMap", tex);
         m.setBoolean("UseMaterialColors", true);
         m.setColor("Diffuse", ColorRGBA.White);
-        m.setColor("Specular", ColorRGBA.White.mult(0.02f)); // reduced specular
+        m.setColor("Specular", ColorRGBA.White.mult(0f)); // reduced specular
         m.setFloat("Shininess", 32f); // tighter, less intense highlight
         return m;
     }

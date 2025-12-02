@@ -14,6 +14,7 @@ import com.jme3.texture.Texture2D;
 import jogo.util.Hit;
 import jogo.util.ProcTextures;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -115,7 +116,7 @@ public class VoxelWorld {
         int radius = 128;
         int treeCooldown = 15;
         int dirtThickness = 2;
-        int grassThickness = 1;
+        int grassThickness = 0;
         int caveHeight = 3;
         int liquidLevel = 18;
         int deepLiquidLevel = 2;
@@ -138,7 +139,7 @@ public class VoxelWorld {
                         } else {
                             setBlock(x, y, z, VoxelPalette.AIR_ID);
                         }
-                    } else if (y >= height - grassThickness) {
+                    } else if (y >= height - grassThickness && y > liquidLevel) {
                         setBlock(x, y, z, VoxelPalette.GRASS_ID);
                     } else if (y >= height - dirtThickness - grassThickness) {
                         setBlock(x, y, z, VoxelPalette.DIRT_ID);
@@ -161,7 +162,7 @@ public class VoxelWorld {
 
                 // Tree generation
                 int topY = getTopSolidY(x, z, "grass");
-                if (Math.random() < 0.002 && checkSurroundings(x, topY+1, z, 5, "wood") == 0) { // 2% + verificar espaço
+                if (Math.random() < 0.002 && topY >= liquidLevel && checkSurroundings(x, topY+1, z, 5, "wood").size() == 0) { // 2% + verificar espaço
                     if (topY > 0)
                         placeTree(x, topY + 1, z);
                 }
@@ -170,8 +171,8 @@ public class VoxelWorld {
         }
     }
 
-    public int checkSurroundings(int x, int y, int z, int radius, String blockType) {
-        int count = 0;
+    public ArrayList<VoxelBlockType> checkSurroundings(int x, int y, int z, int radius, String blockType) {
+        ArrayList<VoxelBlockType> surroundingBlocks = new ArrayList();
         int[][] directions = { // direções dos 6 blocos adjacentes
                 {1, 0, 0}, {-1, 0, 0},
                 {0, 1, 0}, {0, -1, 0},
@@ -182,16 +183,16 @@ public class VoxelWorld {
                 int nx = x + dir[0] * r;
                 int ny = y + dir[1] * r;
                 int nz = z + dir[2] * r;
-                if (inBounds(nx, ny, nz)) { // verificar se está dentro dos limites do mund
+                if (inBounds(nx, ny, nz)) { // verificar se está dentro dos limites do mundo
                     VoxelBlockType type = palette.get(getBlock(nx, ny, nz)); // verificar o bloco nessa posição
                     if (blockType != null) {
                         if (type.getName() != blockType) continue;
                     }
-                    count++;
+                    surroundingBlocks.add(type);
                 }
             }
         }
-        return count;
+        return surroundingBlocks;
     }
 
     public int getTopSolidY(int x, int z, String blockType) {
@@ -338,11 +339,6 @@ public class VoxelWorld {
     public void placeTree(int x, int y, int z) { //função place tree para as arvores
         int trunkHeight = 4 + (int)(Math.random() * 3);
 
-        // Tronco
-        for (int i = 0; i < trunkHeight; i++) {
-            setBlock(x, y + i, z, palette.WOOD_ID);
-        }
-
         int leavesStart = y + trunkHeight;
 
         int radius = 2 + (int)(Math.random() * 2);
@@ -358,6 +354,12 @@ public class VoxelWorld {
                 }
             }
         }
+
+        // Tronco
+        for (int i = 0; i < trunkHeight + 2; i++) {
+            setBlock(x, y + i, z, palette.WOOD_ID);
+        }
+
     }
 
     public void setLit(boolean lit) {

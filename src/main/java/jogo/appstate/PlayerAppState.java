@@ -17,6 +17,7 @@ import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class PlayerAppState extends BaseAppState {
@@ -47,6 +48,7 @@ public class PlayerAppState extends BaseAppState {
     private PointLight playerLight;
     private boolean previousInLiquid = false;
     private byte previousBlockInPlayer = 0;
+    private int previousPlayerHealth = 100;
 
     public PlayerAppState(Node rootNode, AssetManager assetManager, Camera cam, InputAppState input, PhysicsSpace physicsSpace, WorldAppState world) {
         this.rootNode = rootNode;
@@ -99,14 +101,24 @@ public class PlayerAppState extends BaseAppState {
 
     @Override
     public void update(float tpf) {
-        // get currentHud
-        HudAppState hud = getStateManager().getState(HudAppState.class);
-
         // player eye Position
         Vector3f eyePos = playerNode.getWorldTranslation().add(0, eyeHeight, 0);
-        int bx = (int) Math.floor(eyePos.x);
-        int by = (int) Math.floor(eyePos.y);
-        int bz = (int) Math.floor(eyePos.z);
+        Vector3f plrPos = playerNode.getWorldTranslation().add(0, 0, 0);
+        int ex = (int) Math.floor(eyePos.x);
+        int ey = (int) Math.floor(eyePos.y);
+        int ez = (int) Math.floor(eyePos.z);
+        int px = (int) Math.floor(plrPos.x);
+        int py = (int) Math.floor(plrPos.y);
+        int pz = (int) Math.floor(plrPos.z);
+
+        // get currentVoxelWorld
+        VoxelWorld voxelWorld = world.getVoxelWorld();
+
+        // get surrounding blocks
+        ArrayList<VoxelBlockType> surroundingBlocks = voxelWorld.checkSurroundings(px, py, pz, 1, null);
+
+        // get currentHud
+        HudAppState hud = getStateManager().getState(HudAppState.class);
 
         // respawn on request
         if (input.consumeRespawnRequested()) {
@@ -117,7 +129,7 @@ public class PlayerAppState extends BaseAppState {
 
         // self damage on request
         if (input.consumeDamageRequested()) {
-            if (player != null) damagePlayer(10, "Admin");
+            if (player != null) player.damage(10);
         }
 
         // pause controls if mouse not captured
@@ -164,16 +176,46 @@ public class PlayerAppState extends BaseAppState {
         // update Liquid
         boolean inLiquid = false;
 
-        byte blockInPlayer = world.getVoxelWorld().getBlock(bx, by, bz);
-        if (blockInPlayer == palette.WATER_ID || blockInPlayer == palette.POISON_ID || blockInPlayer == palette.LAVA_ID) {
+        byte blockInPlayerEyes = voxelWorld.getBlock(ex, ey, ez);
+        if (blockInPlayerEyes == palette.WATER_ID || blockInPlayerEyes == palette.POISON_ID || blockInPlayerEyes == palette.LAVA_ID) {
             inLiquid = true;
         }
 
-        if (inLiquid != previousInLiquid || blockInPlayer != previousBlockInPlayer) {
+        if (inLiquid != previousInLiquid || blockInPlayerEyes != previousBlockInPlayer) {
             previousInLiquid = inLiquid;
-            previousBlockInPlayer = blockInPlayer;
-            hud.updateLiquidEffect(blockInPlayer, inLiquid);
+            previousBlockInPlayer = blockInPlayerEyes;
+            hud.updateLiquidEffect(blockInPlayerEyes, inLiquid);
         }
+
+        // update Health + if 0 then call Death
+        int currentHealth = player.getHealth();
+
+        if (currentHealth != previousPlayerHealth && player != null) {
+            previousPlayerHealth = currentHealth;
+
+            if (player.isDead()) {
+                respawn();
+            }
+
+            if (hud != null) {
+                hud.updateHealthBar(currentHealth, player.getMAX_HEALTH());
+            };
+        }
+
+        // update Hazard blocks
+        for (VoxelBlockType surroundingBlock : surroundingBlocks) {
+            if (surroundingBlock.isHazard()) {
+                surroundingBlock.onContact(player);
+            } else {
+                continue;
+            }
+        }
+
+        // update internal character clocks
+        if (player != null) {
+            player.updateInternalTimer(tpf);
+        }
+
     }
 
     private void onDeath() {
@@ -189,20 +231,6 @@ public class PlayerAppState extends BaseAppState {
         // Reset look
         this.pitch = 0.35f;
         applyViewToCamera();
-    }
-
-    public void damagePlayer(int damage, String source) {
-        if (player == null) return;
-        player.damage(damage);
-        System.out.println("PlayerAppState damagePlayer: Player took " + damage + " Damage!");
-
-        if (player.isDead()) {
-            respawn();
-        }
-
-        HudAppState hud = getStateManager().getState(HudAppState.class);
-        if (hud == null) return;
-        hud.updateHealthBar(player.getHealth(), player.getMAX_HEALTH());
     }
 
     private Vector3f computeWorldMove(Vector3f inputXZ) {

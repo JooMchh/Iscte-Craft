@@ -112,13 +112,13 @@ public class HudAppState extends BaseAppState {
         if (inLiquid) {
             switch (liquid) {
                 case 7:
-                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0.5f, 0.09f, 0.7f, .55f));
+                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0.3f, 0.04f, 0.5f, .55f));
                     break;
                 case 8:
                     hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(1f, 0.13f, 0f, .55f));
                     break;
                 case 9:
-                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0f, 0.13f, 1f, .35f));
+                    hudLiquidColorEffect.getMaterial().setColor("Color", new ColorRGBA(0f, 0.07f, .5f, .35f));
                     break;
             }
             hudLiquidColorEffect.setCullHint(Spatial.CullHint.Never);

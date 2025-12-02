@@ -5,9 +5,9 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
-import jogo.voxel.VoxelBlockType;
+import jogo.gameobject.character.Character;
 
-public class PoisonBlockType extends VoxelBlockType {
+public class PoisonBlockType extends HazardBlockType {
     public PoisonBlockType() {
         super("poison");
     }
@@ -32,5 +32,10 @@ public class PoisonBlockType extends VoxelBlockType {
         m.setFloat("Shininess", 32f); // tighter, less intense highlight
         m.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         return m;
+    }
+
+    @Override
+    public void onContact(Character chr) {
+        chr.damage(2);
     }
 }
