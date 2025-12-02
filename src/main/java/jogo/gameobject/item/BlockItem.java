@@ -2,7 +2,7 @@ package jogo.gameobject.item;
 
 import com.jme3.app.state.AppStateManager;
 
-public class BlockItem extends Item {
+public class BlockItem extends Item implements BlockType {
     protected BlockItem(String name) { super(name); }
 
     @Override
