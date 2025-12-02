@@ -13,7 +13,6 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import jogo.framework.math.Vec3;
 import jogo.gameobject.character.Player;
-import jogo.voxel.HazardType;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
@@ -205,7 +204,7 @@ public class PlayerAppState extends BaseAppState {
 
         // update Hazard blocks
         for (VoxelBlockType surroundingBlock : surroundingBlocks) {
-            if (surroundingBlock instanceof HazardType) {
+            if (surroundingBlock.isHazard()) {
                 surroundingBlock.onContact(player);
             } else {
                 continue;

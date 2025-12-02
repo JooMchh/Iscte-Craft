@@ -14,7 +14,7 @@ public class Inventory {
     }
 
     public void setSlot(byte slot, Item item) {
-        slots[slot] = new ItemStack();
+        return;
     }
 
     public void setSelectedSlot(byte slot) {
