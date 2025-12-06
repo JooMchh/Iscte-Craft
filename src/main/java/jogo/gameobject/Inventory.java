@@ -14,12 +14,28 @@ public class Inventory {
     }
 
     public void setSlot(byte slot, Item item) {
-        return;
+        if (slot < 0 || slot >= CAPACITY) {
+            System.out.println("Attempted to set invalid slot: " + slot + " inventory might be maxed.");
+            return;
+        };
+        if (item == null) {
+            slots[slot] = null;
+        } else {
+            ItemStack slotStack = slots[slot];
+            if (slotStack == null) {
+                slots[slot] = new ItemStack(item, (byte) 1);
+            } else if (slotStack.isMaxed()) {
+                this.setSlot( (byte) (slot+1), item);
+            } else if (slotStack.getItem() == item) {
+                slots[slot].addToStack((byte) 1);
+            }
+        }
+
     }
 
     public void setSelectedSlot(byte slot) {
         if (slot < 0 || slot >= CAPACITY) {
-            throw new IllegalArgumentException("Invalid slot: " + slot);
+            System.out.println("Attempted to select invalid slot: " + slot);
         };
         selectedSlot = slot;
     }
@@ -31,4 +47,10 @@ public class Inventory {
     public byte getSelectedSlot() {
         return selectedSlot;
     }
+
+    public boolean isHotBarSlot(byte slot) {
+        return slot >= 0 && slot < 9;
+    }
+
+
 }

@@ -12,4 +12,12 @@ public abstract class Item extends GameObject {
     public void onInteract() {
         // Hook for interaction logic (engine will route interactions)
     }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "name='" + name + '\'' +
+                "maxStack='" + maxStack() + '\'' +
+                '}';
+    }
 }

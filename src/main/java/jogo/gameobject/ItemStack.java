@@ -10,8 +10,6 @@ public class ItemStack {
     private byte stack;
     private boolean isBlock;
 
-
-
     public ItemStack(Item item, byte stack) {
         this.item = item;
         this.stack = stack;
@@ -33,7 +31,7 @@ public class ItemStack {
         } else if (this.stack + amount > this.item.maxStack()) {
             this.stack = this.item.maxStack();
             System.out.println("Stack Maxed");
-            return;
+            throw new IllegalArgumentException("Stack Maxed");
         }
         this.stack += amount;
     }
@@ -59,6 +57,10 @@ public class ItemStack {
 
     public boolean isBlock() {
         return isBlock;
+    }
+
+    public boolean isMaxed() {
+        return stack >= item.maxStack();
     }
 
 }

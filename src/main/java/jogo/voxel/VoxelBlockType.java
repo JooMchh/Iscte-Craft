@@ -7,9 +7,7 @@ import jogo.gameobject.character.Character;
 public abstract class VoxelBlockType {
     private final String name;
 
-    protected VoxelBlockType(String name) {
-        this.name = name;
-    }
+    protected VoxelBlockType(String name) { this.name = name; }
 
     public String getName() {
         return name;
@@ -23,6 +21,8 @@ public abstract class VoxelBlockType {
     public boolean canCollide() { return true; }
     // whether this block is a hazard
     public boolean isHazard() { return false; }
+
+    public boolean isInteractable() { return false; }
 
     /**
      * Returns the Material for this block type. Override in subclasses for custom materials.

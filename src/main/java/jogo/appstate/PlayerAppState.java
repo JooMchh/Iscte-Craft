@@ -12,6 +12,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import jogo.framework.math.Vec3;
+import jogo.gameobject.Inventory;
 import jogo.gameobject.character.Player;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
@@ -32,6 +33,7 @@ public class PlayerAppState extends BaseAppState {
     private Node playerNode;
     private BetterCharacterControl characterControl;
     private Player player;
+    private Inventory inventory;
     private VoxelPalette palette;
 
     // view angles
@@ -72,6 +74,7 @@ public class PlayerAppState extends BaseAppState {
 
         // Engine-neutral player entity (no engine visuals here)
         player = new Player();
+        inventory = player.getInventory();
 
         // BetterCharacterControl(radius, height, mass)
         characterControl = new BetterCharacterControl(0.42f, 1.8f, 80f);
@@ -130,6 +133,7 @@ public class PlayerAppState extends BaseAppState {
         // self damage on request
         if (input.consumeDamageRequested()) {
             if (player != null) player.damage(10);
+
         }
 
         // pause controls if mouse not captured
