@@ -19,10 +19,6 @@ public abstract class VoxelBlockType {
     public boolean isBreakable() { return true; }
     // whether this block can collide
     public boolean canCollide() { return true; }
-    // whether this block is a hazard
-    public boolean isHazard() { return false; }
-
-    public boolean isInteractable() { return false; }
 
     /**
      * Returns the Material for this block type. Override in subclasses for custom materials.
@@ -38,5 +34,4 @@ public abstract class VoxelBlockType {
         return getMaterial(assetManager);
     }
 
-    public void onContact(Character chr) { return; };
 }

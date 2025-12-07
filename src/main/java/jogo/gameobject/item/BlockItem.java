@@ -1,14 +1,16 @@
 package jogo.gameobject.item;
 
-import com.jme3.app.state.AppStateManager;
+import jogo.appstate.CharacterType;
 
 public class BlockItem extends Item implements BlockType {
-    protected BlockItem(String name) { super(name); }
+    private byte blockId;
+
+    protected BlockItem(String name, byte blockId) { super(name); this.blockId = blockId; }
 
     @Override
     public byte maxStack() { return 64; }
 
-    public void onInteract() {
+    public void onInteract(CharacterType characterAppState) {
 
     }
 }

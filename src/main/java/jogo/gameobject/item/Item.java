@@ -1,6 +1,7 @@
 package jogo.gameobject.item;
 
 import com.jme3.app.state.BaseAppState;
+import jogo.appstate.CharacterType;
 import jogo.gameobject.GameObject;
 
 public abstract class Item extends GameObject {
@@ -9,7 +10,7 @@ public abstract class Item extends GameObject {
     // how big the stacks of this item can get
     public byte maxStack() { return 0; }
 
-    public void onInteract() {
+    public void onInteract(CharacterType characterAppState) {
         // Hook for interaction logic (engine will route interactions)
     }
 

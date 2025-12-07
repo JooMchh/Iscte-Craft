@@ -171,14 +171,39 @@ public class VoxelWorld {
         }
     }
 
-    public ArrayList<VoxelBlockType> checkSurroundings(int x, int y, int z, int radius, String blockType) {
-        ArrayList<VoxelBlockType> surroundingBlocks = new ArrayList();
+    public HashMap<String,VoxelBlockType> checkSurroundings(int x, int y, int z, int radius, String blockType) {
+        HashMap<String,VoxelBlockType> surroundingBlocks = new HashMap<>();
         int[][] directions = { // direções dos 6 blocos adjacentes
                 {1, 0, 0}, {-1, 0, 0},
                 {0, 1, 0}, {0, -1, 0},
                 {0, 0, 1}, {0, 0, -1}
         };
-        for (int[] dir : directions) {
+        for (int i = 0; i <= directions.length; i++) {
+            System.out.println(i);
+            String directionKey = null;
+            int dir[] = directions[i];
+
+            switch (i) {
+                case 0:
+                    directionKey = "XPositive";
+                    break;
+                case 1:
+                    directionKey = "XNegative";
+                    break;
+                case 2:
+                    directionKey = "YPositive";
+                    break;
+                case 3:
+                    directionKey = "YNegative";
+                    break;
+                case 4:
+                    directionKey = "ZPositive";
+                    break;
+                case 5:
+                    directionKey = "ZNegative";
+                    break;
+            }
+
             for (int r = 1; r <= radius; r++) {
                 int nx = x + dir[0] * r;
                 int ny = y + dir[1] * r;
@@ -188,7 +213,7 @@ public class VoxelWorld {
                     if (blockType != null) {
                         if (type.getName() != blockType) continue;
                     }
-                    surroundingBlocks.add(type);
+                    surroundingBlocks.put(directionKey + " : " + r, type);
                 }
             }
         }

@@ -5,9 +5,10 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
-import jogo.gameobject.character.Character;
+import jogo.appstate.CharacterType;
+import jogo.voxel.VoxelBlockType;
 
-public class PoisonBlockType extends HazardBlockType {
+public class PoisonBlockType extends VoxelBlockType implements HazardType {
     public PoisonBlockType() {
         super("poison");
     }
@@ -35,7 +36,13 @@ public class PoisonBlockType extends HazardBlockType {
     }
 
     @Override
-    public void onContact(Character chr) {
-        chr.damage(2);
+    public void onContact(CharacterType chr) {
+        chr.characterDamage(5);
     }
+
+    @Override
+    public void onStep(CharacterType chr) {
+        chr.setWalkSpeed(2.5f);
+    }
+
 }

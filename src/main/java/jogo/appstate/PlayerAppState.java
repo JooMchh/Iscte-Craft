@@ -11,17 +11,16 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import jogo.framework.math.Vec3;
 import jogo.gameobject.Inventory;
 import jogo.gameobject.character.Player;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
+import jogo.voxel.blocks.HazardType;
 
-import java.util.ArrayList;
-import java.util.Vector;
+import java.util.HashMap;
 
-public class PlayerAppState extends BaseAppState {
+public class PlayerAppState extends BaseAppState implements CharacterType {
 
     private final Node rootNode;
     private final AssetManager assetManager;
@@ -41,7 +40,9 @@ public class PlayerAppState extends BaseAppState {
     private float pitch = 0f;
 
     // tuning
-    private float moveSpeed = 8.0f; // m/s
+    private final float SET_MOVE_SPEED = 8.0f;
+    private final float SET_JUMP_FORCE = 400f;
+    private float moveSpeed = SET_MOVE_SPEED; // m/s
     private float sprintMultiplier = 1.7f;
     private float mouseSensitivity = 30f; // degrees per mouse analog unit
     private float eyeHeight = 1.7f;
@@ -79,7 +80,7 @@ public class PlayerAppState extends BaseAppState {
         // BetterCharacterControl(radius, height, mass)
         characterControl = new BetterCharacterControl(0.42f, 1.8f, 80f);
         characterControl.setGravity(new Vector3f(0, -24f, 0));
-        characterControl.setJumpForce(new Vector3f(0, 400f, 0));
+        characterControl.setJumpForce(new Vector3f(0, SET_JUMP_FORCE, 0));
         playerNode.addControl(characterControl);
         physicsSpace.add(characterControl);
 
@@ -118,7 +119,7 @@ public class PlayerAppState extends BaseAppState {
         VoxelWorld voxelWorld = world.getVoxelWorld();
 
         // get surrounding blocks
-        ArrayList<VoxelBlockType> surroundingBlocks = voxelWorld.checkSurroundings(px, py, pz, 1, null);
+        HashMap<String, VoxelBlockType> surroundingBlocks = voxelWorld.checkSurroundings(px, py, pz, 1, null);
 
         // get currentHud
         HudAppState hud = getStateManager().getState(HudAppState.class);
@@ -207,13 +208,7 @@ public class PlayerAppState extends BaseAppState {
         }
 
         // update Hazard blocks
-        for (VoxelBlockType surroundingBlock : surroundingBlocks) {
-            if (surroundingBlock.isHazard()) {
-                surroundingBlock.onContact(player);
-            } else {
-                continue;
-            }
-        }
+        updateHazardBlocks(surroundingBlocks);
 
         // update internal character clocks
         if (player != null) {
@@ -221,6 +216,56 @@ public class PlayerAppState extends BaseAppState {
         }
 
     }
+
+    private void updateHazardBlocks(HashMap<String, VoxelBlockType> surroundingBlocks) {
+        for (String blockDirectionKey : surroundingBlocks.keySet()) {
+            VoxelBlockType surroundingBlock = surroundingBlocks.get(blockDirectionKey);
+            String[] blockDirectionKeySplit = blockDirectionKey.split(" : ");
+            String blockDirection = blockDirectionKeySplit[0];
+
+            if (surroundingBlock instanceof HazardType hazardBlock) {
+                hazardBlock.onContact(this);
+                if (blockDirection == "YNegative") {
+                    hazardBlock.onStep(this);
+                }
+            }
+        }
+    }
+
+    // characterAppState implements
+
+    @Override
+    public void characterDamage(int damage) {
+        if (player != null) {
+            player.damage(damage);
+        }
+    }
+
+    @Override
+    public void resetJumpForce() {
+        if (characterControl != null) {
+            characterControl.setJumpForce(new Vector3f(0, SET_JUMP_FORCE,0));
+        }
+    }
+
+    @Override
+    public void resetWalkSpeed() {
+        moveSpeed = SET_MOVE_SPEED;
+    }
+
+    @Override
+    public void setWalkSpeed(float walkSpeed) {
+        moveSpeed = walkSpeed;
+    }
+
+    @Override
+    public void setJumpForce(float jumpForce) {
+        if (characterControl != null) {
+            this.characterControl.setJumpForce(new Vector3f(0, jumpForce, 0));
+        }
+    }
+
+    //
 
     private void onDeath() {
         player.setHealth(100);

@@ -50,9 +50,15 @@ public class InteractionAppState extends BaseAppState {
             Spatial hit = results.getClosestCollision().getGeometry();
             GameObject obj = findRegistered(hit);
             if (obj instanceof Item item) {
-                item.onInteract();
-                System.out.println("Interacted with item: " + obj.getName());
-                return; // prefer item interaction if both are hit
+                // get currentPlayer through app state
+                PlayerAppState player = getStateManager().getState(PlayerAppState.class);
+                if (player != null) {
+                    item.onInteract(player);
+                    System.out.println("Interacted with item: " + obj.getName());
+                    return; // prefer item interaction if both are hit
+                } else {
+                    System.out.println("Failed to interact with item: " + obj.getName() + ", PlayerAppState not found");
+                }
             }
         }
 
