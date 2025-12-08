@@ -178,7 +178,7 @@ public class VoxelWorld {
                 {0, 1, 0}, {0, -1, 0},
                 {0, 0, 1}, {0, 0, -1}
         };
-        for (int i = 0; i <= directions.length; i++) {
+        for (int i = 0; i < directions.length; i++) {
             System.out.println(i);
             String directionKey = null;
             int dir[] = directions[i];
