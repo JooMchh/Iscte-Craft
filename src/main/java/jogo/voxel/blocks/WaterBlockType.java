@@ -5,9 +5,10 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
+import jogo.appstate.CharacterType;
 import jogo.voxel.VoxelBlockType;
 
-public class WaterBlockType extends VoxelBlockType {
+public class WaterBlockType extends VoxelBlockType implements HazardType {
     public WaterBlockType() {
         super("water");
     }
@@ -33,4 +34,14 @@ public class WaterBlockType extends VoxelBlockType {
         m.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         return m;
     }
+
+    @Override
+    public void onContact(CharacterType chr) {
+    }
+
+    @Override
+    public void onStep(CharacterType chr) {
+        chr.setWalkSpeed(2.5f);
+    }
+
 }

@@ -1,6 +1,6 @@
 package jogo.gameobject.character;
 
-import jogo.gameobject.Inventory;
+import jogo.gameobject.Inventory.Inventory;
 
 public class Player extends Character {
     private Inventory inventory;

@@ -11,7 +11,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import jogo.gameobject.Inventory;
+import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.character.Player;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
@@ -118,8 +118,9 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         // get currentVoxelWorld
         VoxelWorld voxelWorld = world.getVoxelWorld();
 
-        // get surrounding blocks
+        // get surrounding blocks and stepping block
         HashMap<String, VoxelBlockType> surroundingBlocks = voxelWorld.checkSurroundings(px, py, pz, 1, null);
+        VoxelBlockType steppingBlock = palette.get(voxelWorld.getBlock(px, py, pz));
 
         // get currentHud
         HudAppState hud = getStateManager().getState(HudAppState.class);
@@ -210,13 +211,22 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         // update Hazard blocks
         updateHazardBlocks(surroundingBlocks);
 
+        // update step Hazard block
+        if (steppingBlock instanceof HazardType stepHazard) {
+            System.out.println("Stepped on hazard: " + steppingBlock.getName());
+            stepHazard.onStep(this);
+        } else if (moveSpeed != SET_MOVE_SPEED || characterControl.getJumpForce(null).y != SET_JUMP_FORCE ) {
+            resetWalkSpeed();
+            resetJumpForce();
+        }
+
         // update internal character clocks
         if (player != null) {
             player.updateInternalTimer(tpf);
         }
 
     }
-
+    // method to simplify hazard block updating
     private void updateHazardBlocks(HashMap<String, VoxelBlockType> surroundingBlocks) {
         for (String blockDirectionKey : surroundingBlocks.keySet()) {
             VoxelBlockType surroundingBlock = surroundingBlocks.get(blockDirectionKey);
@@ -224,10 +234,8 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
             String blockDirection = blockDirectionKeySplit[0];
 
             if (surroundingBlock instanceof HazardType hazardBlock) {
+                System.out.println("Near contact hazard: " + surroundingBlock.getName() + blockDirection);
                 hazardBlock.onContact(this);
-                if (blockDirection == "YNegative") {
-                    hazardBlock.onStep(this);
-                }
             }
         }
     }
@@ -243,6 +251,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
 
     @Override
     public void resetJumpForce() {
+        System.out.println("reset speed");
         if (characterControl != null) {
             characterControl.setJumpForce(new Vector3f(0, SET_JUMP_FORCE,0));
         }
@@ -256,6 +265,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
     @Override
     public void setWalkSpeed(float walkSpeed) {
         moveSpeed = walkSpeed;
+        System.out.println("set walkspeed");
     }
 
     @Override

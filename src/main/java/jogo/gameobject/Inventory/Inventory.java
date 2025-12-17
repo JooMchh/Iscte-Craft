@@ -1,8 +1,6 @@
-package jogo.gameobject;
+package jogo.gameobject.Inventory;
 
 import jogo.gameobject.item.Item;
-
-import java.util.ArrayList;
 
 public class Inventory {
     private ItemStack[] slots;

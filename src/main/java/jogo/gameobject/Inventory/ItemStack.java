@@ -1,4 +1,4 @@
-package jogo.gameobject;
+package jogo.gameobject.Inventory;
 
 import jogo.gameobject.item.BlockType;
 import jogo.gameobject.item.Item;
