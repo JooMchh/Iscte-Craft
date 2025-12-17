@@ -126,13 +126,14 @@ public class VoxelWorld {
 
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 5);
+                int caveZoneLimit = height - caveHeight - grassThickness - dirtThickness;
 
                 for (int y = 0; y <= height; y++) {
                     double caveNoise = perlin.noise(x * .05, y * .05, z * .05);
 
                     if (y == 0) {
                         setBlock(x, y, z, VoxelPalette.BEDROCK_ID);
-                    } else if (caveNoise > 0.3 && y <= height - caveHeight - grassThickness - dirtThickness) {
+                    } else if (caveNoise > 0.3 && y <= caveZoneLimit) {
                         //System.out.println("CAVE at " + x + "," + y + "," + z);
                         if (y <= deepLiquidLevel) {
                             setBlock(x, y, z, VoxelPalette.LAVA_ID);
@@ -144,7 +145,15 @@ public class VoxelWorld {
                     } else if (y >= height - dirtThickness - grassThickness) {
                         setBlock(x, y, z, VoxelPalette.DIRT_ID);
                     } else {
-                        setBlock(x, y, z, VoxelPalette.STONE_ID);
+                        if (y <= caveZoneLimit) {
+                            if (Math.random() < 0.005) {
+                                setBlock(x, y, z, VoxelPalette.METAL_BLOCK_ID);
+                            } else {
+                                setBlock(x, y, z, VoxelPalette.STONE_ID);
+                            }
+                        } else {
+                            setBlock(x, y, z, VoxelPalette.STONE_ID);
+                        }
                     }
                 }
 
