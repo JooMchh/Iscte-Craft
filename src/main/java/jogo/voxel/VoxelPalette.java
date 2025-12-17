@@ -38,6 +38,7 @@ public class VoxelPalette {
         p.register(new WoodPlankBlockType()); // id 10
         p.register(new MetalBlockType()); // id 11
         p.register(new TotemBlockType()); // id 12
+        p.register(new CrystalCoreBlockType()); //id 13
         return p;
     }
 
@@ -54,4 +55,5 @@ public class VoxelPalette {
     public static final byte WOOD_PLANK_ID = 10;
     public static final byte METAL_BLOCK_ID = 11;
     public static final byte TOTEM_BLOCK_ID = 12;
+    public static final byte CRYSTAL_CORE_ID = 13;
 }
