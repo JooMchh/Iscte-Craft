@@ -35,6 +35,7 @@ public class VoxelPalette {
         p.register(new PoisonBlockType()); // id 7
         p.register(new LavaBlockType()); // id 8
         p.register(new WaterBlockType()); // id 9
+        p.register(new WoodPlankBlockType()); // id 10
         return p;
     }
 
@@ -48,4 +49,5 @@ public class VoxelPalette {
     public static final byte POISON_ID = 7;
     public static final byte LAVA_ID = 8;
     public static final byte WATER_ID = 9;
+    public static final byte WOOD_PLANK_ID = 10;
 }

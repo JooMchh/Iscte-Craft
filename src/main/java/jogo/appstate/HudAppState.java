@@ -25,6 +25,9 @@ public class HudAppState extends BaseAppState {
     private Picture hudLiquidColorEffect;
     private float hbWidth = 284f;
     private float hbHeight = 32f;
+    private BitmapText timerText;
+    private float gameTime = 0.0f;
+    private boolean gameRunning = true; // Para parar o tempo quando o jogo acabar
 
     public HudAppState(Node guiNode, AssetManager assetManager) {
         this.guiNode = guiNode;
@@ -68,6 +71,21 @@ public class HudAppState extends BaseAppState {
         hudLiquidColorEffect.setImage(assetManager, "Interface/Colorhudeffect.png", true);
         hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
         guiNode.attachChild(hudLiquidColorEffect);
+        // timer
+        BitmapFont myFont = app.getAssetManager().loadFont("Interface/Fonts/AlagardFNT.fnt");
+
+        timerText = new BitmapText(myFont, false);
+        timerText.setSize(myFont.getCharSet().getRenderedSize());
+        timerText.setColor(ColorRGBA.White);
+        timerText.setText("Tempo: 0");
+
+        // Posicionar no topo direito (exemplo)
+        SimpleApplication simpleApp = (SimpleApplication) app;
+        float width = simpleApp.getCamera().getWidth();
+        float height = simpleApp.getCamera().getHeight();
+        timerText.setLocalTranslation(width - 180, height - 20, 0); // Ajusta a posição
+
+        simpleApp.getGuiNode().attachChild(timerText);
     }
 
     private void centerCrosshair(int w, int h) {
@@ -136,6 +154,22 @@ public class HudAppState extends BaseAppState {
         centerCrosshair(w, h);
         centerHealthBar(h);
         centerHudEffects(w, h);
+        // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)
+
+        if (gameRunning) {
+            // 2. Incrementar o tempo
+            gameTime += tpf;
+
+            // 3. Atualizar o texto na tela
+            // (int) gameTime remove as casas decimais para ficar mais limpo
+            timerText.setText("Tempo: " + (int) gameTime + "s");
+        }
+    }
+    public void stopTimer() {
+        this.gameRunning = false;
+    }
+    public float getFinalTime() {
+        return gameTime;
     }
 
     @Override
