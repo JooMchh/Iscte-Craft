@@ -116,6 +116,10 @@ public class WorldAppState extends BaseAppState {
                             cell.y + (int) hit.normal.y,
                             cell.z + (int) hit.normal.z
                     );
+                    if (!canPlaceBlock(placePos)) {
+                        System.out.println("WorldAppState update: can't place block in player position");
+                        return;
+                    }
                     voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, blockItem.getBlockId());
                     playerInventory.subtractSlot(playerInventory.getSelectedSlot(), 1);
                     System.out.println("WorldAppState update: Block placed by Player at (" + placePos.x + "," + placePos.y + "," + placePos.z + ").");
@@ -126,6 +130,25 @@ public class WorldAppState extends BaseAppState {
         }
         if (input != null && input.consumeToggleShadingRequested()) {
             voxelWorld.toggleRenderDebug();
+        }
+    }
+
+    private boolean canPlaceBlock(VoxelWorld.Vector3i placePos) {
+        Vector3f playerPos = playerAppState.getPlayerPosition();
+        Vector3f playerEyePos = playerAppState.getPlayerEyePosition();
+        int px = (int) playerPos.x;
+        int py = (int) playerPos.y;
+        int pz = (int) playerPos.z;
+        int ex = (int) playerEyePos.x;
+        int ey = (int) playerEyePos.y;
+        int ez = (int) playerEyePos.z;
+
+        if ((px == placePos.x || ex == placePos.x) &&
+                (py == placePos.y || ey == placePos.y) &&
+                (pz == placePos.z || ex == placePos.z)) {
+            return false;
+        } else {
+            return true;
         }
     }
 

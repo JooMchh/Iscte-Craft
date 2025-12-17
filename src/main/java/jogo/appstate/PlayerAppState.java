@@ -106,8 +106,8 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
     @Override
     public void update(float tpf) {
         // player eye Position
-        Vector3f eyePos = playerNode.getWorldTranslation().add(0, eyeHeight, 0);
-        Vector3f plrPos = playerNode.getWorldTranslation().add(0, 0, 0);
+        Vector3f eyePos = getPlayerEyePosition();
+        Vector3f plrPos = getPlayerPosition();
         int ex = (int) Math.floor(eyePos.x);
         int ey = (int) Math.floor(eyePos.y);
         int ez = (int) Math.floor(eyePos.z);
@@ -248,6 +248,16 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         }
     }
 
+    public Vector3f getPlayerPosition() {
+        Vector3f plrPos = playerNode.getWorldTranslation().add(0, 0, 0);
+        return plrPos;
+    }
+
+    public Vector3f getPlayerEyePosition() {
+        Vector3f plrPos = playerNode.getWorldTranslation().add(0, eyeHeight, 0);
+        return plrPos;
+    }
+
     // characterAppState implements
 
     @Override
@@ -259,7 +269,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
 
     @Override
     public void resetJumpForce() {
-        System.out.println("reset speed");
+        System.out.println("PlayerAppState: reset jumpforce");
         if (characterControl != null) {
             characterControl.setJumpForce(new Vector3f(0, SET_JUMP_FORCE,0));
         }
@@ -267,24 +277,25 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
 
     @Override
     public void resetWalkSpeed() {
+        System.out.println("PlayerAppState: reset walkspeed");
         moveSpeed = SET_MOVE_SPEED;
     }
 
     @Override
     public void setWalkSpeed(float walkSpeed) {
         moveSpeed = walkSpeed;
-        System.out.println("set walkspeed");
+        System.out.println("PlayerAppState: set walkspeed to " + walkSpeed);
     }
 
     @Override
     public void setJumpForce(float jumpForce) {
         if (characterControl != null) {
+            System.out.println("PlayerAppState: set vertical jumpforce to " + jumpForce);
             this.characterControl.setJumpForce(new Vector3f(0, jumpForce, 0));
         }
     }
 
     //
-
 
     public Inventory getInventory() {
         return inventory;
