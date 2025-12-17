@@ -37,12 +37,13 @@ public class PoisonBlockType extends VoxelBlockType implements HazardType {
 
     @Override
     public void onContact(CharacterType chr) {
-        chr.characterDamage(5);
+        chr.characterDamage(1);
     }
 
     @Override
     public void onStep(CharacterType chr) {
-        chr.setWalkSpeed(2.5f);
+        chr.setWalkSpeed(2f);
+        chr.setJumpForce(300f);
     }
 
 }

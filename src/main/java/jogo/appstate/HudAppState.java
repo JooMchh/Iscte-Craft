@@ -10,6 +10,10 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+import jogo.gameobject.Inventory.Inventory;
+import jogo.gameobject.Inventory.ItemStack;
+import jogo.gameobject.character.Player;
+import jogo.gameobject.item.Item;
 
 import java.awt.*;
 
@@ -17,17 +21,26 @@ public class HudAppState extends BaseAppState {
 
     private final Node guiNode;
     private final AssetManager assetManager;
+    private PlayerAppState player;
     private BitmapText crosshair;
+
     private Picture healthBarBorder;
     private Picture healthBarBG;
     private Picture healthBar;
     private BitmapText healthBarText;
+    private final float hbWidth = 284f;
+    private final float hbHeight = 32f;
+
     private Picture hudLiquidColorEffect;
-    private float hbWidth = 284f;
-    private float hbHeight = 32f;
+
     private BitmapText timerText;
     private float gameTime = 0.0f;
     private boolean gameRunning = true; // Para parar o tempo quando o jogo acabar
+
+    private Picture[] inventorySlots;
+    private BitmapText[] slotTexts;
+    private Picture selectedSlot;
+    private final float slotSize = 57f;
 
     public HudAppState(Node guiNode, AssetManager assetManager) {
         this.guiNode = guiNode;
@@ -36,6 +49,8 @@ public class HudAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
+        // get playerAppState
+        player = getStateManager().getState(PlayerAppState.class);
         // font
         BitmapFont font = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapFont pixelFont = assetManager.loadFont("Interface/Fonts/AlagardFNT.fnt");
@@ -46,6 +61,33 @@ public class HudAppState extends BaseAppState {
         guiNode.attachChild(crosshair);
         System.out.println("HudAppState initialized: crosshair attached");
         // Health bar stuff
+        createHealthBar(pixelFont);
+        guiNode.attachChild(healthBarBG);
+        guiNode.attachChild(healthBar);
+        guiNode.attachChild(healthBarBorder);
+        guiNode.attachChild(healthBarText);
+        updateHealthBar(100, 100);
+        System.out.println("HudAppState initialized: health bar attached");
+        // Screen effects
+        hudLiquidColorEffect = new Picture(";LiquidHudEffect");
+        hudLiquidColorEffect.setImage(assetManager, "Interface/Colorhudeffect.png", true);
+        hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
+        guiNode.attachChild(hudLiquidColorEffect);
+        System.out.println("HudAppState initialized: liquidEffects attached");
+        // timer
+        timerText = new BitmapText(pixelFont, false);
+        timerText.setSize(pixelFont.getCharSet().getRenderedSize());
+        timerText.setColor(ColorRGBA.White);
+        timerText.setText("Tempo: 0");
+        guiNode.attachChild(timerText);
+        System.out.println("HudAppState initialized: timer score attached");
+        // Inventory HUD
+        createInventory(pixelFont);
+        System.out.println("HudAppState initialized: inventory attached");
+    }
+
+    // method para condensar a criação da healthbar
+    private void createHealthBar(BitmapFont font) {
         healthBarBG = new Picture("Health Bar Background");
         healthBarBG.setImage(assetManager, "Interface/healthbarborderBG.png", true);
         healthBarBG.setWidth(hbWidth);
@@ -58,34 +100,54 @@ public class HudAppState extends BaseAppState {
         healthBarBorder.setImage(assetManager, "Interface/healthbarborder.png", true);
         healthBarBorder.setWidth(hbWidth);
         healthBarBorder.setHeight(hbHeight);
-        healthBarText = new BitmapText(pixelFont, false);
-        healthBarText.setSize(font.getCharSet().getRenderedSize());
-        guiNode.attachChild(healthBarBG);
-        guiNode.attachChild(healthBar);
-        guiNode.attachChild(healthBarBorder);
-        guiNode.attachChild(healthBarText);
-        updateHealthBar(100, 100);
-        System.out.println("HudAppState initialized: health bar attached");
-        // Screen effects
-        hudLiquidColorEffect = new Picture(";LiquidHudEffect");
-        hudLiquidColorEffect.setImage(assetManager, "Interface/Colorhudeffect.png", true);
-        hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
-        guiNode.attachChild(hudLiquidColorEffect);
-        // timer
-        BitmapFont myFont = app.getAssetManager().loadFont("Interface/Fonts/AlagardFNT.fnt");
+        healthBarText = new BitmapText(font, false);
+        healthBarText.setSize(font.getCharSet().getRenderedSize() * .5f);
+    }
 
-        timerText = new BitmapText(myFont, false);
-        timerText.setSize(myFont.getCharSet().getRenderedSize());
-        timerText.setColor(ColorRGBA.White);
-        timerText.setText("Tempo: 0");
+    private void createInventory(BitmapFont font) {
+        Inventory playerInventory = player.getInventory();
+        int slotCount = playerInventory.getCAPACITY();
+        int selectedInvSlot = playerInventory.getSelectedSlot();
 
-        // Posicionar no topo direito (exemplo)
-        SimpleApplication simpleApp = (SimpleApplication) app;
-        float width = simpleApp.getCamera().getWidth();
-        float height = simpleApp.getCamera().getHeight();
-        timerText.setLocalTranslation(width - 180, height - 20, 0); // Ajusta a posição
+        inventorySlots = new Picture[slotCount];
+        slotTexts = new BitmapText[slotCount];
 
-        simpleApp.getGuiNode().attachChild(timerText);
+        for (int i = 0; i < slotCount; i++) {
+            inventorySlots[i] = new Picture("InvSlot:"+1);
+            inventorySlots[i].setImage(assetManager, "Interface/InvHUD.png", true);
+            inventorySlots[i].setWidth(slotSize); inventorySlots[i].setHeight(slotSize);
+            guiNode.attachChild(inventorySlots[i]);
+            slotTexts[i] = new BitmapText(font, false);
+            slotTexts[i].setSize(font.getCharSet().getRenderedSize() * .35f);
+            guiNode.attachChild(slotTexts[i]);
+        }
+
+        selectedSlot = new Picture("SelectedSlot");
+        selectedSlot.setImage(assetManager, "Interface/InvHover.png", true);
+        selectedSlot.setWidth(slotSize); selectedSlot.setHeight(slotSize);
+        guiNode.attachChild(selectedSlot);
+    }
+
+    private void updateInventory(int w, int h) {
+        Inventory playerInventory = player.getInventory();
+        int slotCount = playerInventory.getCAPACITY();
+        int selectedInvSlot = playerInventory.getSelectedSlot();
+
+        for (int i = 0; i < slotCount; i++) {
+            float tx = w/6f + ((i * inventorySlots[i].getWidth())) ;
+            float ty = inventorySlots[i].getHeight()-20f;
+            inventorySlots[i].setLocalTranslation(tx, ty, 0);
+            slotTexts[i].setLocalTranslation(tx + (slotTexts[i].getLineWidth()/10f), ty + (slotTexts[i].getLineHeight()*4f), 1);
+            ItemStack slotStack = playerInventory.getItemStack(i);
+            if (slotStack != null) {
+                Item stackItem = slotStack.getItem();
+                slotTexts[i].setText(stackItem.getName() + "\n\n    x" + slotStack.getStack());
+            } else {
+                slotTexts[i].setText("");
+            }
+        }
+
+        selectedSlot.setLocalTranslation(inventorySlots[selectedInvSlot].getLocalTranslation().x, inventorySlots[selectedInvSlot].getLocalTranslation().y, 2);
     }
 
     private void centerCrosshair(int w, int h) {
@@ -117,6 +179,10 @@ public class HudAppState extends BaseAppState {
         crosshair.setLocalTranslation(x, y, 0);
         hudLiquidColorEffect.setWidth(w);
         hudLiquidColorEffect.setHeight(h);
+    }
+
+    public void centerTimer(int w, int h) {
+        timerText.setLocalTranslation(w - 180, h - 20, 0);
     }
 
     public void updateHealthBar(float health, float maxHealth) {
@@ -154,6 +220,8 @@ public class HudAppState extends BaseAppState {
         centerCrosshair(w, h);
         centerHealthBar(h);
         centerHudEffects(w, h);
+        centerTimer(w, h);
+        updateInventory(w, h);
         // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)
 
         if (gameRunning) {

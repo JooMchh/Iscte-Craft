@@ -11,6 +11,10 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import jogo.gameobject.Inventory.Inventory;
+import jogo.gameobject.Inventory.ItemStack;
+import jogo.gameobject.item.BlockItem;
+import jogo.gameobject.item.BlockType;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
@@ -41,9 +45,7 @@ public class WorldAppState extends BaseAppState {
         this.input = input;
     }
 
-    public void registerPlayerAppState(PlayerAppState playerAppState) {
-        this.playerAppState = playerAppState;
-    }
+    public void registerPlayerAppState(PlayerAppState playerAppState) { this.playerAppState = playerAppState; }
 
     @Override
     protected void initialize(Application app) {
@@ -84,35 +86,43 @@ public class WorldAppState extends BaseAppState {
 
     @Override
     public void update(float tpf) {
+        Inventory playerInventory = playerAppState.getInventory();
+
         if (input != null && input.isMouseCaptured() && input.consumeBreakRequested()) {
             var pick = voxelWorld.pickFirstSolid(cam, 6f);
             pick.ifPresent(hit -> {
                 VoxelWorld.Vector3i cell = hit.cell;
+                byte blockID = voxelWorld.getBlock(cell.x, cell.y, cell.z);
                 VoxelBlockType type = palette.get(voxelWorld.getBlock(cell.x, cell.y, cell.z));
                 if (!type.isBreakable()) {
                     System.out.println("WorldAppState update: Player cannot break " + type.getName());
                     return;
                 }
                 if (voxelWorld.breakAt(cell.x, cell.y, cell.z)) {
+                    playerInventory.setSlot(0, new BlockItem(type.getName(), blockID));
                     voxelWorld.rebuildDirtyChunks(physicsSpace);
                     playerAppState.refreshPhysics();
                 }
             });
         }
         if (input != null && input.isMouseCaptured() && input.consumePlaceRequested()) { // Le place block
-            var pick = voxelWorld.pickFirstSolid(cam, 6f);
-            pick.ifPresent(hit -> {
-                VoxelWorld.Vector3i cell = hit.cell;
-                VoxelWorld.Vector3i placePos = new VoxelWorld.Vector3i(
-                        cell.x + (int) hit.normal.x,
-                        cell.y + (int) hit.normal.y,
-                        cell.z + (int) hit.normal.z
-                );
-                voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, VoxelPalette.WOOD_ID);
-                System.out.println("WorldAppState update: Block placed by Player at (" + placePos.x + "," + placePos.y + "," + placePos.z + ").");
-                voxelWorld.rebuildDirtyChunks(physicsSpace);
-                playerAppState.refreshPhysics();
-            });
+            ItemStack selectedItemStack = playerInventory.getSelectedItemStack();
+            if (selectedItemStack != null && selectedItemStack.getItem() instanceof BlockType blockItem) {
+                var pick = voxelWorld.pickFirstSolid(cam, 6f);
+                pick.ifPresent(hit -> {
+                    VoxelWorld.Vector3i cell = hit.cell;
+                    VoxelWorld.Vector3i placePos = new VoxelWorld.Vector3i(
+                            cell.x + (int) hit.normal.x,
+                            cell.y + (int) hit.normal.y,
+                            cell.z + (int) hit.normal.z
+                    );
+                    voxelWorld.setBlock(placePos.x, placePos.y, placePos.z, blockItem.getBlockId());
+                    playerInventory.subtractSlot(playerInventory.getSelectedSlot(), 1);
+                    System.out.println("WorldAppState update: Block placed by Player at (" + placePos.x + "," + placePos.y + "," + placePos.z + ").");
+                    voxelWorld.rebuildDirtyChunks(physicsSpace);
+                    playerAppState.refreshPhysics();
+                });
+            }
         }
         if (input != null && input.consumeToggleShadingRequested()) {
             voxelWorld.toggleRenderDebug();

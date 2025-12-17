@@ -42,7 +42,8 @@ public class LavaBlockType extends VoxelBlockType implements HazardType {
 
     @Override
     public void onStep(CharacterType chr) {
-        chr.setWalkSpeed(2.5f);
+        chr.setWalkSpeed(1f);
+        chr.setJumpForce(300f);
     }
 
 }

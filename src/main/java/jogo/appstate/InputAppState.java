@@ -23,6 +23,8 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     private volatile boolean respawnRequested;
     private volatile boolean interactRequested;
     private volatile boolean damageRequested;
+    private volatile boolean invLeftRequested;
+    private volatile boolean invRightRequested;
     private float mouseDX, mouseDY;
     private boolean mouseCaptured = true;
 
@@ -44,9 +46,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         // Toggle capture (use TAB, ESC exits app by default)
         im.addMapping("ToggleMouse", new KeyTrigger(KeyInput.KEY_TAB));
         // Break voxel (left mouse)
-        im.addMapping("Break", new MouseButtonTrigger(com.jme3.input.MouseInput.BUTTON_LEFT));
+        im.addMapping("Break", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         // Place voxel (right mouse)
-        im.addMapping("Place", new MouseButtonTrigger(com.jme3.input.MouseInput.BUTTON_RIGHT));
+        im.addMapping("Place", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         // Toggle shading (L)
         im.addMapping("ToggleShading", new KeyTrigger(KeyInput.KEY_L));
         // Respawn (R)
@@ -55,10 +57,12 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("Interact", new KeyTrigger(KeyInput.KEY_E));
         // Self-Damage (K)
         im.addMapping("Damage", new KeyTrigger(KeyInput.KEY_K));
-        // Set FullScreen (F11)
-        im.addMapping("Fullscreen", new KeyTrigger(KeyInput.KEY_F11));
+        // Scroll inv Left (scroll wheel up)
+        im.addMapping("invLeft", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        // Scroll inv Left (scroll wheel up)
+        im.addMapping("invRight", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -82,7 +86,8 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("Respawn");
         im.deleteMapping("Interact");
         im.deleteMapping("Damage");
-        im.deleteMapping("Fullscreen");
+        im.deleteMapping("invLeft");
+        im.deleteMapping("invRight");
         im.removeListener(this);
     }
 
@@ -126,8 +131,11 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             case "Damage" -> {
                 if (isPressed) damageRequested = true;
             }
-            case "Fullscreen" -> {
-
+            case "invLeft" -> {
+                if (isPressed && mouseCaptured) invLeftRequested = true;
+            }
+            case "invRight" -> {
+                if (isPressed && mouseCaptured) invRightRequested = true;
             }
         }
     }
@@ -192,6 +200,18 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     public boolean consumeDamageRequested() {
         boolean r = damageRequested;
         damageRequested = false;
+        return r;
+    }
+
+    public boolean consumeInvLeftRequested() {
+        boolean r = invLeftRequested;
+        invLeftRequested = false;
+        return r;
+    }
+
+    public boolean consumeInvRightRequested() {
+        boolean r = invRightRequested;
+        invRightRequested = false;
         return r;
     }
 

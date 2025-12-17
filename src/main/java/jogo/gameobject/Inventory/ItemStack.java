@@ -7,10 +7,10 @@ import jogo.voxel.VoxelPalette;
 public class ItemStack {
     private VoxelPalette palette;
     private Item item;
-    private byte stack;
+    private int stack;
     private boolean isBlock;
 
-    public ItemStack(Item item, byte stack) {
+    public ItemStack(Item item, int stack) {
         this.item = item;
         this.stack = stack;
         if (item instanceof BlockType) {
@@ -20,25 +20,27 @@ public class ItemStack {
 
     public void setItem(Item item) {
         if (item == this.item) {
-            throw new IllegalArgumentException("Item is already set to the given item");
+            System.out.println("Item is already set to the given item");
+            return;
         }
         this.item = item;
     }
 
-    public void addToStack(byte amount) {
+    public void addToStack(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("Amount to add must be positive");
+            System.out.println("Amount to add must be positive");
+            return;
         } else if (this.stack + amount > this.item.maxStack()) {
             this.stack = this.item.maxStack();
             System.out.println("Stack Maxed");
-            throw new IllegalArgumentException("Stack Maxed");
         }
         this.stack += amount;
     }
 
-    public void removeFromStack(byte amount) {
-        if (amount >= 0) {
-            throw new IllegalArgumentException("Amount to take must be positive");
+    public void removeFromStack(int amount) {
+        if (amount <= 0) {
+            System.out.println("Amount to take must be positive");
+            return;
         } else if (this.stack - amount < 0) {
             this.stack = 0;
             System.out.println("Stack Empty");
@@ -51,7 +53,7 @@ public class ItemStack {
         return item;
     }
 
-    public byte getStack() {
+    public int getStack() {
         return stack;
     }
 
@@ -62,5 +64,7 @@ public class ItemStack {
     public boolean isMaxed() {
         return stack >= item.maxStack();
     }
+
+    public boolean isEmpty() { return stack == 0; }
 
 }

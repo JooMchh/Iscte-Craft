@@ -132,10 +132,17 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
             respawn();
         }
 
+        // inventory control requests
+        if (input.consumeInvLeftRequested()) {
+            inventory.setSelectedSlot(inventory.getSelectedSlot()-1);
+        }
+        if (input.consumeInvRightRequested()) {
+            inventory.setSelectedSlot(inventory.getSelectedSlot()+1);
+        }
+
         // self damage on request
         if (input.consumeDamageRequested()) {
             if (player != null) player.damage(10);
-
         }
 
         // pause controls if mouse not captured
@@ -226,6 +233,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         }
 
     }
+
     // method to simplify hazard block updating
     private void updateHazardBlocks(HashMap<String, VoxelBlockType> surroundingBlocks) {
         for (String blockDirectionKey : surroundingBlocks.keySet()) {
@@ -276,6 +284,11 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
     }
 
     //
+
+
+    public Inventory getInventory() {
+        return inventory;
+    }
 
     private void onDeath() {
         player.setHealth(100);
