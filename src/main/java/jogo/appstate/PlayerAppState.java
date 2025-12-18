@@ -11,14 +11,22 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import jogo.framework.math.Vec3;
+import jogo.gameobject.Crafting.Crafting;
+import jogo.gameobject.Crafting.Recipe;
 import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.character.Player;
+import jogo.gameobject.item.BlockItem;
+import jogo.gameobject.item.BlockType;
+import jogo.gameobject.item.Item;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
 import jogo.voxel.blocks.HazardType;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 public class PlayerAppState extends BaseAppState implements CharacterType {
 
@@ -127,6 +135,9 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         // get currentHud
         HudAppState hud = getStateManager().getState(HudAppState.class);
 
+        // get renderAppState
+        RenderAppState renderAppState = getStateManager().getState(RenderAppState.class);
+
         // respawn on request
         if (input.consumeRespawnRequested()) {
             // refresh spawn from world in case terrain changed
@@ -135,6 +146,26 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         }
 
         // Drop item requests
+        if (input.consumeDropRequested()) {
+            // drop one item of the selected item stack
+            if (inventory.getSelectedItemStack() != null ) {
+                int stackAmount = inventory.getItemStack(inventory.getSelectedSlot()).getStack();
+                Item droppedItem = inventory.subtractSlot(inventory.getSelectedSlot(), stackAmount);
+                if (droppedItem != null) {
+                    droppedItem.setStack(stackAmount);
+                    droppedItem.setPosition(new Vec3(px, py, pz));
+                    renderAppState.getRegistry().add(droppedItem);
+                }
+            }
+
+        }
+
+        // CRAFTING Stuffs
+        if (input.consumeCraft1Requested()) {
+            craft(0);
+        } else if (input.consumeCraft2Requested()) {
+            craft(1);
+        }
 
         // inventory control requests
         if (input.consumeInvLeftRequested()) {
@@ -236,6 +267,17 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
             player.updateInternalTimer(tpf);
         }
 
+    }
+
+    // method to simplify crafting
+    private void craft(int recipeIndex) {
+        Crafting freshCrafting = new Crafting();
+        List<Recipe> freshRecipes = freshCrafting.getRecipes();
+        if (recipeIndex <= freshRecipes.size()) {
+            freshCrafting.craft(freshRecipes.get(recipeIndex), inventory);
+        } else {
+            System.out.println("PlayerAppState: Invalid index passed to craft");
+        }
     }
 
     // method to simplify hazard block updating
