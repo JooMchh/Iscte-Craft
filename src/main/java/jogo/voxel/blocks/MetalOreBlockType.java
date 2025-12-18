@@ -4,9 +4,11 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture2D;
+import jogo.gameobject.item.Item;
+import jogo.gameobject.item.MetalScrap;
 import jogo.voxel.VoxelBlockType;
 
-public class MetalOreBlockType extends VoxelBlockType {
+public class MetalOreBlockType extends VoxelBlockType implements OreType {
     public MetalOreBlockType() {
         super("Metal Ore");
     }
@@ -22,5 +24,10 @@ public class MetalOreBlockType extends VoxelBlockType {
         m.setColor("Specular", ColorRGBA.White.mult(0.02f)); // reduced specular
         m.setFloat("Shininess", 32f); // tighter, less intense highlight
         return m;
+    }
+
+    @Override
+    public Item onMine() {
+        return new MetalScrap();
     }
 }

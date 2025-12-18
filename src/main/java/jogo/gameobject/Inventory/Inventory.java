@@ -34,19 +34,53 @@ public class Inventory {
 
     }
 
-    public void subtractSlot(int slot, int amount) {
+    public Item subtractSlot(int slot, int amount) {
         if (slot < 0 || slot >= CAPACITY) {
             System.out.println("Inventory: Attempted to subtract from invalid slot: " + slot);
-            return;
+            return null;
         };
         ItemStack slotStack = slots[slot];
         if (slotStack == null) {
             System.out.println("Inventory: " + slot + " attempted to subtract from empty slot");
+            return null;
         } else {
+            Item removedItem = slotStack.getItem();
             slotStack.removeFromStack(amount);
             if (slotStack.isEmpty()) {
                 slots[slot] = null;
                 System.out.println("Inventory: " + slot + " is empty, setting to null");
+            }
+            return removedItem;
+        }
+
+    }
+
+    public boolean hasItem(String name, int amount) {
+        int count = 0;
+        for (ItemStack stack : slots) {
+            if (stack != null && stack.getItem().getName() == name ) {
+                count += stack.getStack();
+            }
+        }
+        return count >= amount;
+    }
+
+    public void removeSpecificItem(Item item, int amount) {
+        int toRemove = amount;
+
+        for (int i = 0; i < CAPACITY; i++) {
+            ItemStack slotStack = getItemStack(i);
+            if ( slotStack != null && slotStack.getItem().getName() == item.getName() ) {
+                int stack = slotStack.getStack();
+
+                if (stack > toRemove) {
+                    slotStack.removeFromStack(toRemove);
+                } else {
+                    toRemove -= stack;
+                    slots[i] = null;
+                }
+
+                if (toRemove <= 0) { return; }
             }
         }
     }

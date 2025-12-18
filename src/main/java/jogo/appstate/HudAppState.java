@@ -10,6 +10,8 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+import jogo.gameobject.Crafting.Crafting;
+import jogo.gameobject.Crafting.Recipe;
 import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.Inventory.ItemStack;
 import jogo.gameobject.character.Player;
@@ -23,6 +25,8 @@ public class HudAppState extends BaseAppState {
     private final AssetManager assetManager;
     private PlayerAppState player;
     private BitmapText crosshair;
+
+    private BitmapText recipesText;
 
     private Picture healthBarBorder;
     private Picture healthBarBG;
@@ -64,6 +68,17 @@ public class HudAppState extends BaseAppState {
         crosshair.setSize(font.getCharSet().getRenderedSize() * 2f);
         guiNode.attachChild(crosshair);
         System.out.println("HudAppState initialized: crosshair attached");
+        // recipes
+        List<Recipe> recipes = new Crafting().getRecipes();
+        recipesText = new BitmapText(pixelFont, false);
+        String allRecipes = "";
+        for (int i = 0; i < recipes.size(); i++) {
+            Recipe recipe = recipes.get(i);
+            allRecipes += "[" + (i+1) + "] = " + recipe.toString();
+        }
+        recipesText.setText(allRecipes);
+        recipesText.setSize(font.getCharSet().getRenderedSize() * 1f);
+        guiNode.attachChild(recipesText);
         // Health bar stuff
         createHealthBar(pixelFont);
         guiNode.attachChild(healthBarBG);
@@ -121,7 +136,6 @@ public class HudAppState extends BaseAppState {
     private void createInventory(BitmapFont font) {
         Inventory playerInventory = player.getInventory();
         int slotCount = playerInventory.getCAPACITY();
-        int selectedInvSlot = playerInventory.getSelectedSlot();
 
         inventorySlots = new Picture[slotCount];
         slotTexts = new BitmapText[slotCount];
@@ -197,6 +211,12 @@ public class HudAppState extends BaseAppState {
 
     public void centerTimer(int w, int h) {
         timerText.setLocalTranslation(w - 180, h - 20, 0);
+    }
+
+    public void centerRecipes(int w, int h) {
+        float x = recipesText.getLineWidth() / 5f;
+        float y = (h + recipesText.getLineHeight()) / 2f;
+        recipesText.setLocalTranslation(x, y, 0);
     }
 
     public void updateHealthBar(float health, float maxHealth) {
@@ -292,6 +312,7 @@ public class HudAppState extends BaseAppState {
         centerHealthBar(h);
         centerHudEffects(w, h);
         centerTimer(w, h);
+        centerRecipes(w, h);
         positionHighScores(w, h);
         updateInventory(w, h);
         // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)

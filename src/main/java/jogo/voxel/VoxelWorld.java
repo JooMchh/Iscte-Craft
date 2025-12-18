@@ -123,7 +123,7 @@ public class VoxelWorld {
         int caveHeight = 3;
         int liquidLevel = 18;
         int deepLiquidLevel = 2;
-        int slimeAmount = 1;
+        int slimeAmount = 0;
         // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
@@ -174,15 +174,14 @@ public class VoxelWorld {
 
                 // Tree generation
                 int topY = getTopSolidY(x, z, "grass");
-                if (Math.random() < 0.002 && topY >= liquidLevel && checkSurroundings(x, topY+1, z, 5, "wood").size() == 0) { // 2% + verificar espaço
-                    if (topY > 0)
-                        placeTree(x, topY + 1, z);
+                if (Math.random() < 0.002 && topY >= liquidLevel && checkSurroundings(x, topY + 1, z, 5, "wood").isEmpty()) { // 2% + verificar espaço
+                    placeTree(x, topY + 1, z);
                 }
 
                 // NPC generation
-                if (slimeAmount == 1 && Math.random() < 0.005) {
+                if (slimeAmount > 0 && Math.random() < 0.005) {
                     aiAppState.spawnSlimeEnemy(this.getRecommendedSpawn().add(0,25,0));
-                    slimeAmount = 0;
+                    slimeAmount -= 1;
                 }
 
             }

@@ -38,6 +38,9 @@ public class InteractionAppState extends BaseAppState {
         if (!input.isMouseCaptured()) return;
         if (!input.consumeInteractRequested()) return;
 
+        // get renderAppState
+        RenderAppState renderAppState = getStateManager().getState(RenderAppState.class);
+
         Vector3f origin = cam.getLocation();
         Vector3f dir = cam.getDirection().normalize();
 
@@ -54,6 +57,7 @@ public class InteractionAppState extends BaseAppState {
                 PlayerAppState player = getStateManager().getState(PlayerAppState.class);
                 if (player != null) {
                     item.onInteract(player);
+                    item.consumeItem(renderAppState.getRegistry());
                     System.out.println("Interacted with item: " + obj.getName());
                     return; // prefer item interaction if both are hit
                 } else {
