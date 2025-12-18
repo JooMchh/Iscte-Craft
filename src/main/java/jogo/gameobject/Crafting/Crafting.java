@@ -64,7 +64,7 @@ public class Crafting {
         neededForTotemBlock.add(new ItemStack(new TotemPart(), 4));
         neededForTotemBlock.add(new ItemStack(new CrystalCore(), 1));
         recipes.add(new Recipe("1 Totem Block",
-                        neededForCrystalCore,
+                        neededForTotemBlock,
                         new ItemStack(
                                 new BlockItem(palette.get(VoxelPalette.TOTEM_BLOCK_ID).getName(), VoxelPalette.TOTEM_BLOCK_ID),
                                 1
