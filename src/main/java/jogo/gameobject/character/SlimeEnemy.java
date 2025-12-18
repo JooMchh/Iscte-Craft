@@ -63,7 +63,7 @@ public class SlimeEnemy extends Character implements AIType {
             drops.add(coreItem);
         }
 
-/* sneaky cheat for dev :O */
+/* sneaky cheat for dev :O
         Item metal = new MetalScrap();
         metal.setStack(64);
         drops.add(metal);
@@ -72,7 +72,7 @@ public class SlimeEnemy extends Character implements AIType {
         drops.add(coreItem);
         Item totemItem = new TotemPart();
         totemItem.setStack(totemItem.maxStack());
-        drops.add(totemItem);/*
+        drops.add(totemItem);
 */
 
         return drops;
