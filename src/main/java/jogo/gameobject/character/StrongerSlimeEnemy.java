@@ -60,11 +60,9 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
         healingGoop.setStack(35);
         drops.add(healingGoop);
 
-        if (Math.random() > .35) {
-            Item totemItem = new TotemPart();
-            totemItem.setStack(1);
-            drops.add(totemItem);
-        }
+        Item totemItem = new TotemPart();
+        totemItem.setStack(1);
+        drops.add(totemItem);
 
         return drops;
     }

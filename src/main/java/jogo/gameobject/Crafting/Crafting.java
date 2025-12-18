@@ -61,7 +61,7 @@ public class Crafting {
         );
 
         List<ItemStack> neededForTotemBlock = new ArrayList<>(); // recipe para fazer crystal core
-        neededForTotemBlock.add(new ItemStack(new TotemPart(), 4));
+        neededForTotemBlock.add(new ItemStack(new TotemPart(), 2));
         neededForTotemBlock.add(new ItemStack(new CrystalCore(), 1));
         recipes.add(new Recipe("1 Totem Block",
                         neededForTotemBlock,

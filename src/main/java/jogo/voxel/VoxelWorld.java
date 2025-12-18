@@ -138,7 +138,7 @@ public class VoxelWorld {
 
                     if (y == 0) {
                         setBlock(x, y, z, VoxelPalette.BEDROCK_ID);
-                    } else if (caveNoise > 0.3 && y <= caveZoneLimit) {
+                    } else if (caveNoise > 0.15 && y <= caveZoneLimit) {
                         //System.out.println("CAVE at " + x + "," + y + "," + z);
                         if (y <= deepLiquidLevel) {
                             setBlock(x, y, z, VoxelPalette.LAVA_ID);
