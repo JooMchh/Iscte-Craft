@@ -1,5 +1,11 @@
 package jogo.gameobject;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Cylinder;
 import jogo.framework.math.Vec3;
 
 /**
@@ -28,5 +34,16 @@ public abstract class GameObject {
 
     public void setPosition(float x, float y, float z) {
         this.position.set(x, y, z);
+    }
+
+    public Geometry render(AssetManager assetManager) { // o 'T O D O'
+        Geometry g = new Geometry(name, new Box(0.3f, 0.3f, 0.3f));
+        Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        m.setBoolean("UseMaterialColors", true);
+        m.setColor("Diffuse", ColorRGBA.Yellow);
+        m.setColor("Specular", ColorRGBA.White.mult(0.1f));
+        m.setFloat("Shininess", 8f);
+        g.setMaterial(m);
+        return g;
     }
 }

@@ -2,6 +2,8 @@ package jogo.gameobject.item;
 
 import com.jme3.app.state.BaseAppState;
 import jogo.appstate.CharacterType;
+import jogo.appstate.PlayerAppState;
+import jogo.engine.GameRegistry;
 import jogo.gameobject.GameObject;
 
 public abstract class Item extends GameObject {
@@ -10,8 +12,12 @@ public abstract class Item extends GameObject {
     // how big the stacks of this item can get
     public byte maxStack() { return 0; }
 
-    public void onInteract(CharacterType characterAppState) {
+    public void onInteract(PlayerAppState playerAppState) {
         // Hook for interaction logic (engine will route interactions)
+    }
+
+    public void consumeItem(GameRegistry gameRegistry) {
+        gameRegistry.remove(this);
     }
 
     @Override

@@ -16,6 +16,7 @@ import jogo.engine.RenderIndex;
 import jogo.framework.math.Vec3;
 import jogo.gameobject.GameObject;
 import jogo.gameobject.character.Player;
+import jogo.gameobject.character.SlimeEnemy;
 import jogo.gameobject.item.Item;
 
 import java.util.HashMap;
@@ -82,17 +83,12 @@ public class RenderAppState extends BaseAppState {
     }
 
     private Spatial createSpatialFor(GameObject obj) {
-        //TODO This could be set inside each GameObject!
-        if (obj instanceof Player) {
-            Geometry g = new Geometry(obj.getName(), new Cylinder(16, 16, 0.35f, 1.4f, true));
-            g.setMaterial(colored(ColorRGBA.Green));
-            return g;
-        } else if (obj instanceof Item) {
-            Geometry g = new Geometry(obj.getName(), new Box(0.3f, 0.3f, 0.3f));
-            g.setMaterial(colored(ColorRGBA.Yellow));
-            return g;
-        }
-        return null;
+        //(done) This could be set inside each GameObject!
+        return obj.render(assetManager);
+    }
+
+    public GameRegistry getRegistry() {
+        return registry;
     }
 
     private Material colored(ColorRGBA color) {

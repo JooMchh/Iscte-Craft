@@ -3,15 +3,11 @@ package jogo;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.jme3.math.ColorRGBA;
 import com.jme3.post.FilterPostProcessor;
-import jogo.appstate.InputAppState;
-import jogo.appstate.PlayerAppState;
-import jogo.appstate.WorldAppState;
-import jogo.appstate.HudAppState;
-import jogo.appstate.RenderAppState;
-import jogo.appstate.InteractionAppState;
+import jogo.appstate.*;
 import jogo.engine.GameRegistry;
 import jogo.engine.RenderIndex;
 
@@ -68,6 +64,9 @@ public class Jogo extends SimpleApplication {
 
         PlayerAppState player = new PlayerAppState(rootNode, assetManager, cam, input, physicsSpace, world);
         stateManager.attach(player);
+
+        AIAppState aiAppState = new AIAppState(rootNode, assetManager, physicsSpace, world, registry);
+        stateManager.attach(aiAppState);
 
         // Post-processing: SSAO for subtle contact shadows
         try {

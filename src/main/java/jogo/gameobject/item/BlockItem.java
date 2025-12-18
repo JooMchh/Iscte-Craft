@@ -1,9 +1,19 @@
 package jogo.gameobject.item;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
 import jogo.appstate.CharacterType;
+import jogo.appstate.PlayerAppState;
+import jogo.gameobject.Inventory.Inventory;
+import jogo.voxel.VoxelPalette;
 
 public class BlockItem extends Item implements BlockType {
     private byte blockId;
+    private final VoxelPalette voxelPalette = new VoxelPalette();
 
     public BlockItem(String name, byte blockId) {
         super(name);
@@ -13,12 +23,22 @@ public class BlockItem extends Item implements BlockType {
     @Override
     public byte maxStack() { return 64; }
 
-    public void onInteract(CharacterType characterAppState) {
-
+    @Override
+    public void onInteract(PlayerAppState playerAppState) {
+        Inventory plrInv =  playerAppState.getInventory();
+        plrInv.setSlot(0, this);
     }
 
     @Override
     public byte getBlockId() {
         return blockId;
+    }
+
+    @Override
+    public Geometry render(AssetManager assetManager) { // o 'T O D O'
+        Geometry g = new Geometry(name, new Box(new Vector3f(0,.3f,0), .3f, .3f, .3f));
+        Material m = voxelPalette.get(blockId).getMaterial(assetManager);
+        g.setMaterial(m);
+        return g;
     }
 }

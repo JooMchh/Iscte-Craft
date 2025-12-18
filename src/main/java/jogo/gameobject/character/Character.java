@@ -1,5 +1,10 @@
 package jogo.gameobject.character;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Cylinder;
 import jogo.gameobject.GameObject;
 
 public abstract class Character extends GameObject {
@@ -36,12 +41,28 @@ public abstract class Character extends GameObject {
         internalDamageTickTimer += tpf;
     }
 
+    public boolean cantHit() {
+        return  (internalDamageTickTimer < iFrames);
+    }
+
     public boolean isDead() {
         if (this.health <= 0) {
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Geometry render(AssetManager assetManager) {
+        Geometry g = new Geometry(name, new Cylinder(16, 16, 0.35f, 1.4f, true));
+        Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        m.setBoolean("UseMaterialColors", true);
+        m.setColor("Diffuse", ColorRGBA.Green);
+        m.setColor("Specular", ColorRGBA.White.mult(0.1f));
+        m.setFloat("Shininess", 8f);
+        g.setMaterial(m);
+        return g;
     }
 
 }
