@@ -14,7 +14,7 @@ public class Crafting {
 
     public Crafting() {
         List<ItemStack> neededForMetalBlock = new ArrayList<>(); // recipe para fazer metal block
-        neededForMetalBlock.add(new ItemStack(new MetalScrap(), 4));
+        neededForMetalBlock.add(new ItemStack(new MetalScrap(), 3));
         recipes.add(new Recipe("1 Metal Block",
                 neededForMetalBlock,
                 new ItemStack(
