@@ -24,17 +24,18 @@ public class Enemy extends ActiveAI {
 
         if (playerPos != null) {
             Vector3f direction = playerPos.subtract(aiNode.getWorldTranslation());
-            direction.y = 0; // set y a height do ai para n voar
 
             if (direction.length() <= getAIType().getDetectionRadius()) {
                 if (direction.length() > getAIType().getAttackRange() && !playerAppState.getPlayer().cantHit()) {
                     direction.normalizeLocal();
+                    direction.y = 0; // set y a height do ai para n voar
                     characterControl.setWalkDirection(direction.mult(moveSpeed));
                     if (playerPos.y > (int) aiNode.getWorldTranslation().y) {
                         characterControl.jump();
                     }
                 } else {
                     // damage and then back away when close for difficulty >:)
+                    direction.y = 0; // same reason
                     characterControl.jump();
                     getAIType().onAttack(playerAppState);
                     characterControl.setWalkDirection(direction.mult(-moveSpeed/2));
