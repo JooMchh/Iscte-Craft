@@ -228,36 +228,43 @@ public class HudAppState extends BaseAppState {
     private void loadTimes() {
         topTimes.clear();
         File file = new File(TIME_FILE);
+
+        // Se o ficheiro não existir, não faz nada
         if (!file.exists()) return;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                // Ignorar linhas vazias para evitar erros de parse
+                if (line.trim().isEmpty()) continue;
+
                 try {
                     topTimes.add(Float.parseFloat(line));
                 } catch (NumberFormatException e) {
-                    System.out.println("Erro ao ler score: " + line);
+                    System.out.println("Erro ao ler score (formato inválido): " + line);
                 }
             }
             // Ordena: tempos menores primeiro (mais rápido é melhor)
             Collections.sort(topTimes);
-        } catch (IOException e) {
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Ficheiro de highscores não encontrado.");
             e.printStackTrace();
         }
     }
-
-    // Guarda a lista atual no ficheiro
     private void saveTimes() {
-        try (FileWriter writer = new FileWriter((TIME_FILE))) {
-            // Guarda apenas os top 5 para não encher o ficheiro
+        try (PrintWriter writer = new PrintWriter(new FileWriter(TIME_FILE))) {
             int count = 0;
             for (Float score : topTimes) {
-                if (count >= 5) break;
-                writer.write(String.valueOf(score));
-                writer.write("\n");
+                if (count >= 5) break; // Guarda apenas os top 5
+
+                // println escreve o número e muda de linha automaticamente
+                writer.println(score);
+
                 count++;
             }
         } catch (IOException e) {
+            System.out.println("Erro ao guardar highscores.");
             e.printStackTrace();
         }
     }
@@ -278,8 +285,7 @@ public class HudAppState extends BaseAppState {
         saveTimes();
         updateTimeDisplay(); // Atualiza o texto no ecrã
     }
-    public void positionHighScores(int w, int h) {
-        // Posiciona no canto superior direito, abaixo do timer (ajusta o -50 ou -100 conforme necessário)
+    public void positionTopTimes(int w, int h) {
         topTimesText.setLocalTranslation(w - 180, h - 60, 0);
     }
     @Override
@@ -292,15 +298,15 @@ public class HudAppState extends BaseAppState {
         centerHealthBar(h);
         centerHudEffects(w, h);
         centerTimer(w, h);
-        positionHighScores(w, h);
+        positionTopTimes(w, h);
         updateInventory(w, h);
         // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)
 
         if (gameRunning) {
-            // 2. Incrementar o tempo
+            // Incrementar o tempo
             gameTime += tpf;
 
-            // 3. Atualizar o texto na tela
+            // Atualizar o texto na tela
             // (int) gameTime remove as casas decimais para ficar mais limpo
             timerText.setText("Tempo: " + (int) gameTime + "s");
         }
