@@ -248,13 +248,13 @@ public class HudAppState extends BaseAppState {
 
     // Guarda a lista atual no ficheiro
     private void saveTimes() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TIME_FILE))) {
+        try (FileWriter writer = new FileWriter((TIME_FILE))) {
             // Guarda apenas os top 5 para não encher o ficheiro
             int count = 0;
             for (Float score : topTimes) {
                 if (count >= 5) break;
                 writer.write(String.valueOf(score));
-                writer.newLine();
+                writer.write("\n");
                 count++;
             }
         } catch (IOException e) {
