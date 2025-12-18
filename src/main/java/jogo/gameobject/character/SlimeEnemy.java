@@ -57,11 +57,21 @@ public class SlimeEnemy extends Character implements AIType {
         healingGoop.setStack(15);
         drops.add(healingGoop);
 
-        if (Math.random() > .25) {
+        if (Math.random() > .35) {
             Item coreItem = new CrystalCore();
-            coreItem.setStack((int) 1);
+            coreItem.setStack(1);
             drops.add(coreItem);
         }
+
+        Item metal = new MetalScrap();
+        metal.setStack(64);
+        drops.add(metal);
+        Item coreItem = new CrystalCore();
+        coreItem.setStack(64);
+        drops.add(coreItem);
+        Item totemItem = new TotemPart();
+        totemItem.setStack(totemItem.maxStack());
+        drops.add(totemItem);
 
         return drops;
     }
