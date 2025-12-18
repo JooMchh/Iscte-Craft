@@ -143,7 +143,7 @@ public class VoxelWorld {
                         if (y <= deepLiquidLevel) {
                             setBlock(x, y, z, VoxelPalette.LAVA_ID);
                         } else {
-                            if (caveSlimeAmount > 0 && Math.random() < 0.005) { // Underground npc Generation
+                            if (caveSlimeAmount > 0 && Math.random() < 0.001) { // Underground npc Generation
                                 aiAppState.spawnCaveSlimeEnemy(new Vector3f(x, y, z));
                                 caveSlimeAmount -= 1;
                             }
@@ -155,7 +155,7 @@ public class VoxelWorld {
                         setBlock(x, y, z, VoxelPalette.DIRT_ID);
                     } else {
                         if (y <= caveZoneLimit) {
-                            if (Math.random() < 0.009) {
+                            if (Math.random() < 0.02) {
                                 setBlock(x, y, z, VoxelPalette.METAL_ORE_ID);
                             } else {
                                 setBlock(x, y, z, VoxelPalette.STONE_ID);

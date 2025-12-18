@@ -28,7 +28,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(10);
+        characterType.characterDamage(3);
     }
 
     @Override

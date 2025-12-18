@@ -20,7 +20,7 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
 
     public StrongerSlimeEnemy() {
         super("Cave Slime");
-        MAX_HEALTH = 500;
+        MAX_HEALTH = 350;
         health = MAX_HEALTH;
     }
 
@@ -31,7 +31,7 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(20);
+        characterType.characterDamage(7);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
 
         if (Math.random() > .35) {
             Item totemItem = new TotemPart();
-            totemItem.setStack(totemItem.maxStack());
+            totemItem.setStack(1);
             drops.add(totemItem);
         }
 
