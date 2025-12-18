@@ -14,8 +14,8 @@ import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.Inventory.ItemStack;
 import jogo.gameobject.character.Player;
 import jogo.gameobject.item.Item;
-
-import java.awt.*;
+import java.util.*;
+import java.io.*;
 
 public class HudAppState extends BaseAppState {
 
@@ -32,6 +32,10 @@ public class HudAppState extends BaseAppState {
     private final float hbHeight = 32f;
 
     private Picture hudLiquidColorEffect;
+
+    private BitmapText topTimesText;
+    private List<Float> topTimes = new ArrayList<>();
+    private final String TIME_FILE = "times.txt";
 
     private BitmapText timerText;
     private float gameTime = 0.0f;
@@ -84,6 +88,16 @@ public class HudAppState extends BaseAppState {
         // Inventory HUD
         createInventory(pixelFont);
         System.out.println("HudAppState initialized: inventory attached");
+
+        topTimesText = new BitmapText(pixelFont, false);
+        topTimesText.setSize(pixelFont.getCharSet().getRenderedSize() * 0.7f); // Um pouco mais pequeno
+        topTimesText.setColor(ColorRGBA.Yellow);
+        guiNode.attachChild(topTimesText);
+
+        loadTimes();       // Carrega do disco
+        updateTimeDisplay(); // Mostra na tela
+
+        System.out.println("HudAppState initialized: highscores attached");
     }
 
     // method para condensar a criação da healthbar
@@ -210,7 +224,64 @@ public class HudAppState extends BaseAppState {
             hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
         }
     }
+    // Carrega os scores do ficheiro para a lista
+    private void loadTimes() {
+        topTimes.clear();
+        File file = new File(TIME_FILE);
+        if (!file.exists()) return;
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    topTimes.add(Float.parseFloat(line));
+                } catch (NumberFormatException e) {
+                    System.out.println("Erro ao ler score: " + line);
+                }
+            }
+            // Ordena: tempos menores primeiro (mais rápido é melhor)
+            Collections.sort(topTimes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Guarda a lista atual no ficheiro
+    private void saveTimes() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TIME_FILE))) {
+            // Guarda apenas os top 5 para não encher o ficheiro
+            int count = 0;
+            for (Float score : topTimes) {
+                if (count >= 5) break;
+                writer.write(String.valueOf(score));
+                writer.newLine();
+                count++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void updateTimeDisplay() {
+        StringBuilder sb = new StringBuilder("TOP TEMPOS:\n");
+        int count = 0;
+        for (Float score : topTimes) {
+            if (count >= 5) break; // Mostra só os top 5
+            sb.append(String.format("%d. %.1fs\n", (count + 1), score));
+            count++;
+        }
+        topTimesText.setText(sb.toString());
+    }
+    // Adiciona um novo tempo, ordena e guarda
+    public void addScore(float time) {
+        topTimes.add(time);
+        Collections.sort(topTimes); // Menor tempo primeiro
+        saveTimes();
+        updateTimeDisplay(); // Atualiza o texto no ecrã
+    }
+    public void positionHighScores(int w, int h) {
+        // Posiciona no canto superior direito, abaixo do timer (ajusta o -50 ou -100 conforme necessário)
+        topTimesText.setLocalTranslation(w - 180, h - 60, 0);
+    }
     @Override
     public void update(float tpf) {
         // keep centered (cheap)
@@ -221,6 +292,7 @@ public class HudAppState extends BaseAppState {
         centerHealthBar(h);
         centerHudEffects(w, h);
         centerTimer(w, h);
+        positionHighScores(w, h);
         updateInventory(w, h);
         // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)
 
@@ -234,7 +306,11 @@ public class HudAppState extends BaseAppState {
         }
     }
     public void stopTimer() {
-        this.gameRunning = false;
+        if (this.gameRunning) { // Só guarda se o jogo estava a correr
+            this.gameRunning = false;
+            addScore(gameTime); // Guarda o tempo atual na tabela
+            System.out.println("Jogo terminado! Tempo registado: " + gameTime);
+        }
     }
     public float getFinalTime() {
         return gameTime;
@@ -243,6 +319,7 @@ public class HudAppState extends BaseAppState {
     @Override
     protected void cleanup(Application app) {
         if (crosshair != null) crosshair.removeFromParent();
+        stopTimer();
     }
 
     @Override

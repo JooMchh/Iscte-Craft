@@ -114,7 +114,6 @@ public class VoxelWorld {
         Vector3i pos = new Vector3i(getRecommendedSpawn());
         // variáveis de world generation
         int radius = 128;
-        int treeCooldown = 15;
         int dirtThickness = 2;
         int grassThickness = 0;
         int caveHeight = 3;
@@ -146,8 +145,8 @@ public class VoxelWorld {
                         setBlock(x, y, z, VoxelPalette.DIRT_ID);
                     } else {
                         if (y <= caveZoneLimit) {
-                            if (Math.random() < 0.005) {
-                                setBlock(x, y, z, VoxelPalette.METAL_BLOCK_ID);
+                            if (Math.random() < 0.009) {
+                                setBlock(x, y, z, VoxelPalette.METAL_ORE_ID);
                             } else {
                                 setBlock(x, y, z, VoxelPalette.STONE_ID);
                             }
