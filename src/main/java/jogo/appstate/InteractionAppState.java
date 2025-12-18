@@ -212,8 +212,8 @@ public class InteractionAppState extends BaseAppState {
 
                     if (belowBlockID == VoxelPalette.CRYSTAL_CORE_ID && belowBelowBlockID == VoxelPalette.METAL_BLOCK_ID) {
                         System.out.println("gone through first check of blocks");
-                        HashMap<String,VoxelBlockType> lowerLowerSurr = world.getVoxelWorld().checkSurroundings(belowBelowPosition[0], belowBelowPosition[1], belowBelowPosition[2], 2, "metal");
-                        if (lowerLowerSurr.size() >= 4) {
+                        HashMap<String,VoxelBlockType> lowerLowerSurr = world.getVoxelWorld().checkSurroundings(belowBelowPosition[0], belowBelowPosition[1], belowBelowPosition[2], 1, "metal");
+                        if (lowerLowerSurr.size() >= 8) {
                             System.out.println("second area check");
                             System.out.println("Bro just won the game congrats");
                             getStateManager().getState(HudAppState.class).stopTimer();

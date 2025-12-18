@@ -205,7 +205,9 @@ public class VoxelWorld {
         int[][] directions = { // direções dos 6 blocos adjacentes
                 {1, 0, 0}, {-1, 0, 0},
                 {0, 1, 0}, {0, -1, 0},
-                {0, 0, 1}, {0, 0, -1}
+                {0, 0, 1}, {0, 0, -1},
+                {1, 0, 1}, {-1, 0, -1},
+                {-1, 0, 1}, {1, 0, -1},
         };
         for (int i = 0; i < directions.length; i++) {
             String directionKey = null;
@@ -229,6 +231,9 @@ public class VoxelWorld {
                     break;
                 case 5:
                     directionKey = "ZNegative";
+                    break;
+                default:
+                    directionKey = "Diagonal" + i;
                     break;
             }
 
