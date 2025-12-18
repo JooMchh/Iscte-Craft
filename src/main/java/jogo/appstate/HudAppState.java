@@ -50,6 +50,10 @@ public class HudAppState extends BaseAppState {
     private Picture selectedSlot;
     private final float slotSize = 57f;
 
+    private Picture guideImage;
+    private boolean isGuideOpen = true; // Começa verdadeiro para mostrar o guia logo no início
+    private InputAppState input;
+
     public HudAppState(Node guiNode, AssetManager assetManager) {
         this.guiNode = guiNode;
         this.assetManager = assetManager;
@@ -108,6 +112,15 @@ public class HudAppState extends BaseAppState {
         topTimesText.setSize(pixelFont.getCharSet().getRenderedSize() * 0.7f); // Um pouco mais pequeno
         topTimesText.setColor(ColorRGBA.Yellow);
         guiNode.attachChild(topTimesText);
+
+        this.input = getStateManager().getState(InputAppState.class);
+
+
+        // configura a imagem do Guia
+        createGuideDisplay(app.getCamera().getWidth(), app.getCamera().getHeight());
+
+        // O jogo não deve contar tempo enquanto o guia está aberto
+        this.gameRunning = false;
 
         loadTimes();       // Carrega do disco
         updateTimeDisplay(); // Mostra na tela
@@ -306,8 +319,35 @@ public class HudAppState extends BaseAppState {
         // Posiciona no canto superior direito, abaixo do timer (ajusta o -50 ou -100 conforme necessário)
         topTimesText.setLocalTranslation(w - 180, h - 60, 0);
     }
+    private void createGuideDisplay(int w, int h) {
+        guideImage = new Picture("GuideImage");
+        // Certifica-te que a imagem existe em resources/Interface/Guide.png
+        try {
+            guideImage.setImage(assetManager, "Interface/Guide.png", true);
+        } catch (Exception e) {
+            System.out.println("Imagem do guia não encontrada! Usando placeholder.");
+            // Se falhar, usa uma imagem de teste ou não crasha
+        }
+        guideImage.setWidth(w);
+        guideImage.setHeight(h);
+        guideImage.setPosition(0, 0);
+
+        // Adiciona ao guiNode para aparecer no ecrã
+        guiNode.attachChild(guideImage);
+    }
+
     @Override
     public void update(float tpf) {
+        if (isGuideOpen) {
+            if (input != null && input.consumeJumpRequested()) {
+                isGuideOpen = false;
+                gameRunning = true; // Começa a contar o tempo
+                guiNode.detachChild(guideImage); // Remove a imagem do ecrã
+                System.out.println("Guia fechado");
+            }
+            // Enquanto o guia está aberto, não fazemos mais nada no update do HUD
+            return;
+        }
         // keep centered (cheap)
         SimpleApplication sapp = (SimpleApplication) getApplication();
         int w = sapp.getCamera().getWidth();
@@ -339,6 +379,10 @@ public class HudAppState extends BaseAppState {
     }
     public float getFinalTime() {
         return gameTime;
+    }
+
+    public boolean isGuideOpen() {
+        return isGuideOpen;
     }
 
     @Override

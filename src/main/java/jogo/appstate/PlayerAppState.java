@@ -113,6 +113,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
 
     @Override
     public void update(float tpf) {
+
         // player eye Position
         Vector3f eyePos = getPlayerEyePosition();
         Vector3f plrPos = getPlayerPosition();
@@ -134,6 +135,11 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
 
         // get currentHud
         HudAppState hud = getStateManager().getState(HudAppState.class);
+        if (hud != null && hud.isGuideOpen()) {
+            // Se o guia estiver aberto, não fazemos nada (o boneco fica parado)
+            // Isto impede que o Player consuma o input de Salto/Interagir
+            return;
+        }
 
         // get renderAppState
         RenderAppState renderAppState = getStateManager().getState(RenderAppState.class);
