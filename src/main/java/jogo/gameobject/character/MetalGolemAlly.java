@@ -10,33 +10,34 @@ import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture2D;
 import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
-import jogo.gameobject.item.*;
-import jogo.voxel.blocks.HazardType;
+import jogo.gameobject.item.BlockItem;
+import jogo.gameobject.item.Item;
+import jogo.gameobject.item.MetalScrap;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrongerSlimeEnemy extends Character implements AIType, HazardImmune {
+public class MetalGolemAlly extends Character implements AIType, HazardImmune {
 
-    public StrongerSlimeEnemy() {
-        super("Cave Slime");
-        MAX_HEALTH = 500;
+    public MetalGolemAlly() {
+        super("Iron Golem");
+        MAX_HEALTH = 250;
         health = MAX_HEALTH;
     }
 
     @Override
     public void onInteract(PlayerAppState appState) {
-
+        appState.characterDamage(-10);
     }
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(20);
+        characterType.characterDamage(25);
     }
 
     @Override
     public BetterCharacterControl getCharacterControl() {
-        BetterCharacterControl characterControl = new BetterCharacterControl(0.4f, 2f, 60f);
+        BetterCharacterControl characterControl = new BetterCharacterControl(0.6f, 5f, 60f);
         characterControl.setGravity(new Vector3f(0, -25f, 0));
         characterControl.setJumpForce(new Vector3f(0, this.getSetJumpForce(), 0));
         return characterControl;
@@ -49,29 +50,23 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
 
     @Override
     public float getSetJumpForce() {
-        return 200f;
+        return 250f;
     }
 
     @Override
     public List<Item> getItemsDroppedOnDeath() {
         List<Item> drops = new ArrayList<>();
 
-        Item healingGoop = new HealingGoop();
-        healingGoop.setStack(35);
-        drops.add(healingGoop);
-
-        if (Math.random() > .35) {
-            Item totemItem = new TotemPart();
-            totemItem.setStack(totemItem.maxStack());
-            drops.add(totemItem);
-        }
+        Item metal = new BlockItem("metal", (byte) 11);
+        metal.setStack(5);
+        drops.add(metal);
 
         return drops;
     }
 
     @Override
     public float getDetectionRadius() {
-        return 15f;
+        return 25f;
     }
 
     @Override
@@ -80,15 +75,16 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
     }
 
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
-        Geometry g = new Geometry(name, new Box(new Vector3f(0,.8f,0), .8f, .8f, .8f));
-        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/SlimeFace.png");
+        Geometry g = new Geometry(name, new Box(new Vector3f(0,2.5f,0), 1.5f, 2.5f, 1.5f));
+        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/MetalBlock.png");
         Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         m.setBoolean("UseMaterialColors", true);
         m.setTexture("DiffuseMap", tex);
-        m.setColor("Diffuse", ColorRGBA.Red);
+        m.setColor("Diffuse", ColorRGBA.White);
         m.setColor("Specular", ColorRGBA.White.mult(0.1f));
-        m.setFloat("Shininess", 50f);
+        m.setFloat("Shininess", 8f);
         g.setMaterial(m);
+        g.setLocalTranslation(0,2.5f,0);
         return g;
     }
 }

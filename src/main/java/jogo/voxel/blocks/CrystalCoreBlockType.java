@@ -8,7 +8,7 @@ import jogo.voxel.VoxelBlockType;
 
 public class CrystalCoreBlockType extends VoxelBlockType {
     public CrystalCoreBlockType() {
-        super("crystal");
+        super("crystal block");
     }
     // isSolid() inherits true from base
 

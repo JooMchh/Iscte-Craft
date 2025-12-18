@@ -97,7 +97,7 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
                 if (!(ai.getCharacter() instanceof HazardImmune)) {
                     updateHazardBlocks(ai, surroundingBlocks);
                     if (steppingBlock instanceof HazardType stepHazard) {
-                        System.out.println("Stepped on hazard: " + steppingBlock.getName());
+                        //System.out.println("AI Stepped on hazard: " + steppingBlock.getName());
                         stepHazard.onStep(ai);
                     } else if (ai.getWalkSpeed() != ai.getSetWalkSpeed() || ai.getJumpForce().y != ai.getSetJumpForce() ) {
                         ai.resetWalkSpeed();
@@ -172,6 +172,15 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
         ActiveAI ai = new Ally(woodGolemAlly, rootNode, physicsSpace, position);
         activeAIs.add(ai);
         System.out.println("AIAppState spawn: Spawned a Wood Golem Ally at" + position.x + "," + position.y + "," + position.z);
+    }
+
+    public void spawnMetalGolemAlly(Vector3f position) {
+        Character metalGolemAlly = new MetalGolemAlly();
+        metalGolemAlly.setPosition(new Vec3(position.x, position.y, position.z));
+        registry.add(metalGolemAlly);
+        ActiveAI ai = new Ally(metalGolemAlly, rootNode, physicsSpace, position);
+        activeAIs.add(ai);
+        System.out.println("AIAppState spawn: Spawned a Metal Golem Ally at" + position.x + "," + position.y + "," + position.z);
     }
 
     //

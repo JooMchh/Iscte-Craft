@@ -55,7 +55,7 @@ public class Jogo extends SimpleApplication {
         GameRegistry registry = new GameRegistry();
         RenderIndex renderIndex = new RenderIndex();
         stateManager.attach(new RenderAppState(rootNode, assetManager, registry, renderIndex));
-        stateManager.attach(new InteractionAppState(rootNode, cam, input, renderIndex, world));
+        stateManager.attach(new InteractionAppState(rootNode, cam, input, renderIndex, world, physicsSpace));
 
         // Demo objects
         // Chest chest = new Chest();

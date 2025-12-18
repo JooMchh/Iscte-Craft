@@ -7,16 +7,11 @@ import com.jme3.texture.Texture2D;
 import jogo.appstate.WorldAppState;
 import jogo.voxel.VoxelBlockType;
 
-public class TotemBlockType extends VoxelBlockType implements InteractableType {
+public class TotemBlockType extends VoxelBlockType {
     public TotemBlockType() {
         super("totem");
     }
     // isSolid() inherits true from base
-
-    @Override
-    public boolean onInteract(WorldAppState world) {
-        return false;
-    }
 
     @Override
     public Material getMaterial(AssetManager assetManager) {

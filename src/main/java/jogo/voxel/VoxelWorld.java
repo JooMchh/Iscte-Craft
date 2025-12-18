@@ -124,8 +124,8 @@ public class VoxelWorld {
         int liquidLevel = 18;
         int deepLiquidLevel = 2;
         int slimeAmount = 75;
-        int caveSlimeAmount = 50;
-        int golemAmount = 1;
+        int caveSlimeAmount = 150;
+        //int golemAmount = 1;
         // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
@@ -143,7 +143,7 @@ public class VoxelWorld {
                         if (y <= deepLiquidLevel) {
                             setBlock(x, y, z, VoxelPalette.LAVA_ID);
                         } else {
-                            if (caveSlimeAmount > 0 && Math.random() < 0.001) { // Underground npc Generation
+                            if (caveSlimeAmount > 0 && Math.random() < 0.005) { // Underground npc Generation
                                 aiAppState.spawnCaveSlimeEnemy(new Vector3f(x, y, z));
                                 caveSlimeAmount -= 1;
                             }
@@ -191,10 +191,10 @@ public class VoxelWorld {
                     slimeAmount -= 1;
                 }
 
-                if (golemAmount > 0) {
-                    aiAppState.spawnWoodGolemAlly(getRecommendedSpawn().add(0,18,0));
-                    golemAmount-=1;
-                }
+                //if (golemAmount > 0) {
+                    //aiAppState.spawnWoodGolemAlly(getRecommendedSpawn().add(0,18,0));
+                    //golemAmount-=1;
+                //}
 
             }
         }

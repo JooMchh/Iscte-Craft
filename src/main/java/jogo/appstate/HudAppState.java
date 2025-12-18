@@ -388,7 +388,16 @@ public class HudAppState extends BaseAppState {
     @Override
     protected void cleanup(Application app) {
         if (crosshair != null) crosshair.removeFromParent();
-        stopTimer();
+        if (healthBarBorder != null) healthBarBorder.removeFromParent();
+        if (healthBar != null) healthBar.removeFromParent();
+        if (healthBarText != null) healthBarText.removeFromParent();
+        if (healthBarBG != null) healthBarBG.removeFromParent();
+        if (hudLiquidColorEffect != null) hudLiquidColorEffect.removeFromParent();
+        if (recipesText != null) recipesText.removeFromParent();
+        if (selectedSlot != null) selectedSlot.removeFromParent();
+        for (Picture slot : inventorySlots) {
+            slot.removeFromParent();
+        }
     }
 
     @Override
