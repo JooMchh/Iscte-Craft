@@ -11,18 +11,17 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.texture.Texture2D;
+import jogo.appstate.AIAppState;
 import jogo.util.Hit;
 import jogo.util.ProcTextures;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class VoxelWorld {
     private final AssetManager assetManager;
     private final int sizeX, sizeY, sizeZ;
     private final VoxelPalette palette;
+    private AIAppState aiAppState;
 
     private final Node node = new Node("VoxelWorld");
     private final Map<Byte, Geometry> geoms = new HashMap<>();
@@ -38,8 +37,9 @@ public class VoxelWorld {
     private final int chunkCountX, chunkCountY, chunkCountZ;
     private final Chunk[][][] chunks;
 
-    public VoxelWorld(AssetManager assetManager, int sizeX, int sizeY, int sizeZ) {
+    public VoxelWorld(AssetManager assetManager, int sizeX, int sizeY, int sizeZ, AIAppState aiAppState) {
         this.assetManager = assetManager;
+        this.aiAppState = aiAppState;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
@@ -68,6 +68,10 @@ public class VoxelWorld {
     private int lx(int x) { return x % chunkSize; }
     private int ly(int y) { return y % chunkSize; }
     private int lz(int z) { return z % chunkSize; }
+
+    public int getSizeY() {
+        return sizeY;
+    }
 
     // Block access
     public byte getBlock(int x, int y, int z) {
@@ -119,10 +123,10 @@ public class VoxelWorld {
         int caveHeight = 3;
         int liquidLevel = 18;
         int deepLiquidLevel = 2;
+        int slimeAmount = 1;
         // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
-
                 double noise = perlin.octaveNoise(x * .05, z * .05, 4, .25);
                 int height = (int) (20 + noise * 5);
                 int caveZoneLimit = height - caveHeight - grassThickness - dirtThickness;
@@ -173,6 +177,12 @@ public class VoxelWorld {
                 if (Math.random() < 0.002 && topY >= liquidLevel && checkSurroundings(x, topY+1, z, 5, "wood").size() == 0) { // 2% + verificar espaço
                     if (topY > 0)
                         placeTree(x, topY + 1, z);
+                }
+
+                // NPC generation
+                if (slimeAmount == 1 && Math.random() < 0.005) {
+                    aiAppState.spawnSlimeEnemy(this.getRecommendedSpawn().add(0,25,0));
+                    slimeAmount = 0;
                 }
 
             }

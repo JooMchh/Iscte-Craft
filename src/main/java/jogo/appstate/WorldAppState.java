@@ -63,7 +63,7 @@ public class WorldAppState extends BaseAppState {
         worldNode.addLight(sun);
 
         // Voxel world 16x16x16 (reduced size for simplicity)
-        voxelWorld = new VoxelWorld(assetManager, 320, 32, 320);
+        voxelWorld = new VoxelWorld(assetManager, 320, 32, 320, getStateManager().getState(AIAppState.class));
         voxelWorld.generateLayers();
         voxelWorld.buildMeshes();
         voxelWorld.clearAllDirtyFlags();
@@ -145,7 +145,8 @@ public class WorldAppState extends BaseAppState {
 
         if ((px == placePos.x || ex == placePos.x) &&
                 (py == placePos.y || ey == placePos.y) &&
-                (pz == placePos.z || ex == placePos.z)) {
+                (pz == placePos.z || ez == placePos.z) || py < voxelWorld.getSizeY()
+        ) {
             return false;
         } else {
             return true;

@@ -43,7 +43,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
     private final float SET_MOVE_SPEED = 8.0f;
     private final float SET_JUMP_FORCE = 400f;
     private float moveSpeed = SET_MOVE_SPEED; // m/s
-    private float sprintMultiplier = 1.7f;
+    private float sprintMultiplier = 1.6f;
     private float mouseSensitivity = 30f; // degrees per mouse analog unit
     private float eyeHeight = 1.7f;
 
@@ -115,6 +115,8 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
         int py = (int) Math.floor(plrPos.y);
         int pz = (int) Math.floor(plrPos.z);
 
+        //System.out.println("Updating PLAYER, at: " + plrPos.x + "," + plrPos.y + "," + plrPos.z);
+
         // get currentVoxelWorld
         VoxelWorld voxelWorld = world.getVoxelWorld();
 
@@ -131,6 +133,8 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
             if (world != null) spawnPosition = world.getRecommendedSpawnPosition();
             respawn();
         }
+
+        // Drop item requests
 
         // inventory control requests
         if (input.consumeInvLeftRequested()) {
@@ -249,7 +253,7 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
     }
 
     public Vector3f getPlayerPosition() {
-        Vector3f plrPos = playerNode.getWorldTranslation().add(0, 0, 0);
+        Vector3f plrPos = playerNode.getWorldTranslation();
         return plrPos;
     }
 
