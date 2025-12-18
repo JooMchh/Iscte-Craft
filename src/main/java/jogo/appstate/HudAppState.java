@@ -244,40 +244,44 @@ public class HudAppState extends BaseAppState {
             hudLiquidColorEffect.setCullHint(Spatial.CullHint.Always);
         }
     }
-    // Carrega os scores do ficheiro para a lista
     private void loadTimes() {
         topTimes.clear();
         File file = new File(TIME_FILE);
+
+        // Se o ficheiro não existir, não faz nada
         if (!file.exists()) return;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.trim().isEmpty()) continue;
+
                 try {
                     topTimes.add(Float.parseFloat(line));
                 } catch (NumberFormatException e) {
-                    System.out.println("Erro ao ler score: " + line);
+                    System.out.println("Erro ao ler score (formato inválido): " + line);
                 }
             }
-            // Ordena: tempos menores primeiro (mais rápido é melhor)
             Collections.sort(topTimes);
-        } catch (IOException e) {
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Ficheiro de highscores não encontrado.");
             e.printStackTrace();
         }
     }
-
-    // Guarda a lista atual no ficheiro
     private void saveTimes() {
-        try (FileWriter writer = new FileWriter((TIME_FILE))) {
-            // Guarda apenas os top 5 para não encher o ficheiro
+        try (PrintWriter writer = new PrintWriter(new FileWriter(TIME_FILE))) {
             int count = 0;
             for (Float score : topTimes) {
-                if (count >= 5) break;
-                writer.write(String.valueOf(score));
-                writer.write("\n");
+                if (count >= 5) break; // Guarda apenas os top 5
+
+                // println escreve o número e muda de linha automaticamente
+                writer.println(score);
+
                 count++;
             }
         } catch (IOException e) {
+            System.out.println("Erro ao guardar highscores.");
             e.printStackTrace();
         }
     }
