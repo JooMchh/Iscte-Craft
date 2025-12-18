@@ -10,9 +10,9 @@ import com.jme3.texture.Texture2D;
 import jogo.appstate.PlayerAppState;
 import jogo.gameobject.Inventory.Inventory;
 
-public class MetalScrap extends Item {
-    public MetalScrap() {
-        super("Metal Scrap");
+public class CrystalCore extends Item {
+    public CrystalCore() {
+        super("Crystal");
     }
 
     @Override
@@ -28,13 +28,12 @@ public class MetalScrap extends Item {
         } else {
             plrInv.setSlot(0, this);
         }
-
     }
 
     @Override
     public Geometry render(AssetManager assetManager) {
-        Geometry g = new Geometry(name, new Box(new Vector3f(0,.4f,0), .4f, .1f, .4f));
-        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/MetalBlock.png");
+        Geometry g = new Geometry(name, new Box(new Vector3f(0,.3f,0), .15f, .3f, .15f));
+        Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/CrystalCore.png");
         Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         m.setBoolean("UseMaterialColors", true);
         m.setTexture("DiffuseMap", tex);

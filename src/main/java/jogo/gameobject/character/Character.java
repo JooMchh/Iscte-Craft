@@ -34,7 +34,7 @@ public abstract class Character extends GameObject {
         } else if (this.health > MAX_HEALTH) {
             this.health = MAX_HEALTH;
         }
-        System.out.println("Character damage: character took " + damage + " damage!");
+        System.out.println("Character damage: character + " + getName() + " + took " + damage + " damage!");
     }
 
     public void updateInternalTimer(float tpf) {

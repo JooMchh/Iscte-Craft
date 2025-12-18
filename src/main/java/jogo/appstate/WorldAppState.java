@@ -5,16 +5,23 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.collision.CollisionResults;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import jogo.gameobject.GameObject;
 import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.Inventory.ItemStack;
+import jogo.gameobject.character.AIType;
+import jogo.gameobject.character.Character;
 import jogo.gameobject.item.BlockItem;
 import jogo.gameobject.item.BlockType;
+import jogo.gameobject.item.Item;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
@@ -89,8 +96,28 @@ public class WorldAppState extends BaseAppState {
     public void update(float tpf) {
         Inventory playerInventory = playerAppState.getInventory();
 
+        // get interactionAppState
+        InteractionAppState interactionAppState = getStateManager().getState(InteractionAppState.class);
+
         if (input != null && input.isMouseCaptured() && input.consumeBreakRequested()) {
             var pick = voxelWorld.pickFirstSolid(cam, 6f);
+
+            Vector3f origin = cam.getLocation();
+            Vector3f dir = cam.getDirection().normalize();
+
+            Ray ray = new Ray(origin, dir);
+            ray.setLimit(6f);
+            CollisionResults results = new CollisionResults();
+            rootNode.collideWith(ray, results);
+            if (results.size() > 0) {
+                Spatial hit = results.getClosestCollision().getGeometry();
+                GameObject obj = interactionAppState.findRegistered(hit);
+                if (obj instanceof Character character) {
+                    character.damage(5);
+                    return; // hits found character and damages ignoring the block behind
+                }
+            }
+
             pick.ifPresent(hit -> {
                 VoxelWorld.Vector3i cell = hit.cell;
                 byte blockID = voxelWorld.getBlock(cell.x, cell.y, cell.z);

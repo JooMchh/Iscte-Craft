@@ -7,13 +7,15 @@ import jogo.AI.ActiveAI;
 import jogo.appstate.PlayerAppState;
 import jogo.gameobject.character.Character;
 
+import java.util.List;
+
 public class Enemy extends ActiveAI {
     public Enemy(Character character, Node rootNode, PhysicsSpace physicsSpace, Vector3f spawnPosition) {
         super(character, rootNode, physicsSpace, spawnPosition);
     }
 
     @Override
-    public void updateAI(PlayerAppState playerAppState) {
+    public void updateAI(PlayerAppState playerAppState, List<ActiveAI> activeAIS) {
 
         //System.out.println("Updating Slime, at: " + aiNode.getWorldTranslation().x + "," + aiNode.getWorldTranslation().y + "," + aiNode.getWorldTranslation().z);
         Vector3f playerPos = new Vector3f((int) playerAppState.getPlayerPosition().x,(int) playerAppState.getPlayerPosition().y,(int) playerAppState.getPlayerPosition().z) ;

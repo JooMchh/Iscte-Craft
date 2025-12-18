@@ -123,7 +123,7 @@ public class VoxelWorld {
         int caveHeight = 3;
         int liquidLevel = 18;
         int deepLiquidLevel = 2;
-        int slimeAmount = 0;
+        int slimeAmount = 1;
         // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {

@@ -28,6 +28,8 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     private volatile boolean dropRequested;
     private volatile boolean craft1Requested;
     private volatile boolean craft2Requested;
+    private volatile boolean craft3Requested;
+    private volatile boolean craft4Requested;
     private float mouseDX, mouseDY;
     private boolean mouseCaptured = true;
 
@@ -70,8 +72,12 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("Craft1", new KeyTrigger(KeyInput.KEY_1));
         // Craft Recipe 2
         im.addMapping("Craft2", new KeyTrigger(KeyInput.KEY_2));
+        // Craft Recipe 3
+        im.addMapping("Craft3", new KeyTrigger(KeyInput.KEY_3));
+        // Craft Recipe 4
+        im.addMapping("Craft4", new KeyTrigger(KeyInput.KEY_4));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight", "dropItem", "Craft1", "Craft2");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight", "dropItem", "Craft1", "Craft2", "Craft3", "Craft4");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -100,6 +106,8 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("dropItem");
         im.deleteMapping("Craft1");
         im.deleteMapping("Craft2");
+        im.deleteMapping("Craft3");
+        im.deleteMapping("Craft4");
         im.removeListener(this);
     }
 
@@ -157,6 +165,12 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             }
             case "Craft2" -> {
                 if (isPressed) craft2Requested = true;
+            }
+            case "Craft3" -> {
+                if (isPressed) craft3Requested = true;
+            }
+            case "Craft4" -> {
+                if (isPressed) craft4Requested = true;
             }
         }
     }
@@ -251,6 +265,18 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     public boolean consumeCraft2Requested() {
         boolean r = craft2Requested;
         craft2Requested = false;
+        return r;
+    }
+
+    public boolean consumeCraft3Requested() {
+        boolean r = craft3Requested;
+        craft3Requested = false;
+        return r;
+    }
+
+    public boolean consumeCraft4Requested() {
+        boolean r = craft4Requested;
+        craft4Requested = false;
         return r;
     }
 

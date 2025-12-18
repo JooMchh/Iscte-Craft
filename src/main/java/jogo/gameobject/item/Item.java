@@ -7,7 +7,7 @@ import jogo.engine.GameRegistry;
 import jogo.gameobject.GameObject;
 
 public abstract class Item extends GameObject {
-    protected int stack;
+    protected int stack = 1;
 
     protected Item(String name) { super(name); }
 

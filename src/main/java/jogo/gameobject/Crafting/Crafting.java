@@ -2,9 +2,7 @@ package jogo.gameobject.Crafting;
 
 import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.Inventory.ItemStack;
-import jogo.gameobject.item.BlockItem;
-import jogo.gameobject.item.Item;
-import jogo.gameobject.item.MetalScrap;
+import jogo.gameobject.item.*;
 import jogo.voxel.VoxelPalette;
 
 import java.util.ArrayList;
@@ -26,13 +24,37 @@ public class Crafting {
                 )
             );
 
-        List<ItemStack> neededForPlank = new ArrayList<>(); // recipe para fazer metal block
+        List<ItemStack> neededForPlank = new ArrayList<>(); // recipe para fazer Wooden planks
         neededForPlank.add(new ItemStack(new BlockItem(palette.get(VoxelPalette.WOOD_ID).getName(), VoxelPalette.WOOD_ID), 1));
         recipes.add(new Recipe("2 Wooden Planks",
                         neededForPlank,
                         new ItemStack(
                                 new BlockItem(palette.get(VoxelPalette.WOOD_PLANK_ID).getName(), VoxelPalette.WOOD_PLANK_ID),
                                 2
+                        )
+                )
+        );
+
+        List<ItemStack> neededForCrystalCore = new ArrayList<>(); // recipe para fazer crystal core
+        neededForCrystalCore.add(new ItemStack(new CrystalCore(), 4));
+        neededForCrystalCore.add(new ItemStack(new MetalScrap(), 2));
+        recipes.add(new Recipe("1 Crystal Core Block",
+                        neededForCrystalCore,
+                        new ItemStack(
+                                new BlockItem(palette.get(VoxelPalette.CRYSTAL_CORE_ID).getName(), VoxelPalette.CRYSTAL_CORE_ID),
+                                1
+                        )
+                )
+        );
+
+        List<ItemStack> neededForTotemBlock = new ArrayList<>(); // recipe para fazer crystal core
+        neededForTotemBlock.add(new ItemStack(new TotemPart(), 4));
+        neededForTotemBlock.add(new ItemStack(new CrystalCore(), 1));
+        recipes.add(new Recipe("1 Totem Block",
+                        neededForCrystalCore,
+                        new ItemStack(
+                                new BlockItem(palette.get(VoxelPalette.TOTEM_BLOCK_ID).getName(), VoxelPalette.TOTEM_BLOCK_ID),
+                                1
                         )
                 )
         );

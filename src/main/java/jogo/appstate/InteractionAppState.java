@@ -76,7 +76,7 @@ public class InteractionAppState extends BaseAppState {
         }
     }
 
-    private GameObject findRegistered(Spatial s) {
+    public GameObject findRegistered(Spatial s) {
         Spatial cur = s;
         while (cur != null) {
             GameObject obj = renderIndex.lookup(cur);

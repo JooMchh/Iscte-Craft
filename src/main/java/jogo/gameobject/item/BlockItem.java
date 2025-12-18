@@ -21,7 +21,7 @@ public class BlockItem extends Item implements BlockType {
     }
 
     @Override
-    public byte maxStack() { return 64; }
+    public byte maxStack() { return 99; }
 
     @Override
     public void onInteract(PlayerAppState playerAppState) {

@@ -9,6 +9,9 @@ import jogo.gameobject.character.Character;
 import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
 import com.jme3.scene.Node;
+import jogo.gameobject.item.Item;
+
+import java.util.List;
 
 public abstract class ActiveAI implements CharacterType {
     protected Character character;
@@ -35,7 +38,7 @@ public abstract class ActiveAI implements CharacterType {
         }
     }
 
-    public void updateAI(PlayerAppState playerAppState) {
+    public void updateAI(PlayerAppState playerAppState, List<ActiveAI> activeAIs) {
         // hook for setting specific AI behaviours ,':)
     }
 
@@ -67,6 +70,10 @@ public abstract class ActiveAI implements CharacterType {
     public float getSetJumpForce() {
         AIType aiCharacter = (AIType) character;
         return aiCharacter.getSetJumpForce();
+    }
+
+    public List<Item> getDrops() {
+        return getAIType().getItemsDroppedOnDeath();
     }
 
     @Override

@@ -5,13 +5,15 @@ import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
 import jogo.gameobject.item.Item;
 
+import java.util.List;
+
 public interface AIType {
     public void onInteract(PlayerAppState appState);
     public void onAttack(CharacterType characterType);
     public BetterCharacterControl getCharacterControl();
     public float getSetWalkSpeed();
     public float getSetJumpForce();
-    public Item[] itemsDroppedOnDeath();
+    public List<Item> getItemsDroppedOnDeath();
     public float getDetectionRadius();
     public float getAttackRange();
 }

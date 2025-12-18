@@ -12,6 +12,7 @@ import jogo.framework.math.Vec3;
 import jogo.gameobject.character.Character;
 import jogo.gameobject.character.HazardImmune;
 import jogo.gameobject.character.SlimeEnemy;
+import jogo.gameobject.item.Item;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
@@ -90,7 +91,7 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
                 HashMap<String, VoxelBlockType> surroundingBlocks = voxelWorld.checkSurroundings(ax, ay, az, 1, null);
                 VoxelBlockType steppingBlock = palette.get(voxelWorld.getBlock(ax, ay, az));
 
-                ai.updateAI(playerAppState);
+                ai.updateAI(playerAppState, activeAIs);
 
                 // update Hazards (if npcs isnt immune)
                 if (!(ai.getCharacter() instanceof HazardImmune)) {
@@ -116,6 +117,11 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
     }
 
     private void killAi(ActiveAI ai) {
+        Vector3f aiPosition = getAIPosition(ai);
+        for (Item drop : ai.getDrops()) {
+            drop.setPosition(new Vec3(aiPosition.x, aiPosition.y, aiPosition.z));
+            registry.add(drop);
+        }
         ai.cleanup(physicsSpace);
         registry.remove(ai.getCharacter());
         System.out.println("an AI has died");

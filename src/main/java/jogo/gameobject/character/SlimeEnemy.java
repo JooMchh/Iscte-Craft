@@ -10,7 +10,10 @@ import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture2D;
 import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
-import jogo.gameobject.item.Item;
+import jogo.gameobject.item.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SlimeEnemy extends Character implements AIType {
 
@@ -25,7 +28,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(15);
+        characterType.characterDamage(5);
     }
 
     @Override
@@ -47,8 +50,27 @@ public class SlimeEnemy extends Character implements AIType {
     }
 
     @Override
-    public Item[] itemsDroppedOnDeath() {
-        return new Item[0];
+    public List<Item> getItemsDroppedOnDeath() {
+        List<Item> drops = new ArrayList<>();
+
+        Item healingGoop = new HealingGoop();
+        healingGoop.setStack(25);
+        drops.add(healingGoop);
+
+        //if (Math.random() > .5) {
+            Item coreItem = new CrystalCore();
+            coreItem.setStack(coreItem.maxStack());
+            drops.add(coreItem);
+        //}
+        Item totemItem = new TotemPart();
+        totemItem.setStack(totemItem.maxStack());
+        drops.add(totemItem);
+
+        Item metalScrap = new MetalScrap();
+        metalScrap.setStack(metalScrap.maxStack());
+        drops.add(metalScrap);
+
+        return drops;
     }
 
     @Override
