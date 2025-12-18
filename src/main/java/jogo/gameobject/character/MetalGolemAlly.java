@@ -74,6 +74,7 @@ public class MetalGolemAlly extends Character implements AIType, HazardImmune {
         return 2.5f;
     }
 
+    @Override
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
         Geometry g = new Geometry(name, new Box(new Vector3f(0,2.5f,0), 1.5f, 2.5f, 1.5f));
         Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/MetalBlock.png");

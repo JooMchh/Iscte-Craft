@@ -77,6 +77,7 @@ public class StrongerSlimeEnemy extends Character implements AIType, HazardImmun
         return 2.5f;
     }
 
+    @Override
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
         Geometry g = new Geometry(name, new Box(new Vector3f(0,.8f,0), .8f, .8f, .8f));
         Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/SlimeFace.png");

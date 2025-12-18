@@ -2,6 +2,7 @@ package jogo.gameobject.Crafting;
 
 import jogo.gameobject.Inventory.ItemStack;
 import jogo.gameobject.item.Item;
+import jogo.voxel.VoxelPalette;
 
 import java.util.HashMap;
 import java.util.List;

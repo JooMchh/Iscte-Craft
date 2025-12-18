@@ -37,13 +37,6 @@ public abstract class GameObject {
     }
 
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
-        Geometry g = new Geometry(name, new Box(0.3f, 0.3f, 0.3f));
-        Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        m.setBoolean("UseMaterialColors", true);
-        m.setColor("Diffuse", ColorRGBA.Yellow);
-        m.setColor("Specular", ColorRGBA.White.mult(0.1f));
-        m.setFloat("Shininess", 8f);
-        g.setMaterial(m);
-        return g;
+        return null;
     }
 }

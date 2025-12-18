@@ -88,6 +88,7 @@ public class SlimeEnemy extends Character implements AIType {
         return 2.5f;
     }
 
+    @Override
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
         Geometry g = new Geometry(name, new Box(new Vector3f(0,.6f,0), .6f, .6f, .6f));
         Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/SlimeFace.png");
