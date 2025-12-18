@@ -10,6 +10,8 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+import jogo.gameobject.Crafting.Crafting;
+import jogo.gameobject.Crafting.Recipe;
 import jogo.gameobject.Inventory.Inventory;
 import jogo.gameobject.Inventory.ItemStack;
 import jogo.gameobject.character.Player;
@@ -23,6 +25,8 @@ public class HudAppState extends BaseAppState {
     private final AssetManager assetManager;
     private PlayerAppState player;
     private BitmapText crosshair;
+
+    private BitmapText recipesText;
 
     private Picture healthBarBorder;
     private Picture healthBarBG;
@@ -64,6 +68,17 @@ public class HudAppState extends BaseAppState {
         crosshair.setSize(font.getCharSet().getRenderedSize() * 2f);
         guiNode.attachChild(crosshair);
         System.out.println("HudAppState initialized: crosshair attached");
+        // recipes
+        List<Recipe> recipes = new Crafting().getRecipes();
+        recipesText = new BitmapText(pixelFont, false);
+        String allRecipes = "";
+        for (int i = 0; i < recipes.size(); i++) {
+            Recipe recipe = recipes.get(i);
+            allRecipes += "[" + (i+1) + "] = " + recipe.toString();
+        }
+        recipesText.setText(allRecipes);
+        recipesText.setSize(font.getCharSet().getRenderedSize() * 1f);
+        guiNode.attachChild(recipesText);
         // Health bar stuff
         createHealthBar(pixelFont);
         guiNode.attachChild(healthBarBG);
@@ -121,7 +136,6 @@ public class HudAppState extends BaseAppState {
     private void createInventory(BitmapFont font) {
         Inventory playerInventory = player.getInventory();
         int slotCount = playerInventory.getCAPACITY();
-        int selectedInvSlot = playerInventory.getSelectedSlot();
 
         inventorySlots = new Picture[slotCount];
         slotTexts = new BitmapText[slotCount];
@@ -199,6 +213,12 @@ public class HudAppState extends BaseAppState {
         timerText.setLocalTranslation(w - 180, h - 20, 0);
     }
 
+    public void centerRecipes(int w, int h) {
+        float x = recipesText.getLineWidth() / 5f;
+        float y = (h + recipesText.getLineHeight()) / 2f;
+        recipesText.setLocalTranslation(x, y, 0);
+    }
+
     public void updateHealthBar(float health, float maxHealth) {
         float barRatio = (health / maxHealth);
         healthBar.setWidth(hbWidth*barRatio);
@@ -228,43 +248,36 @@ public class HudAppState extends BaseAppState {
     private void loadTimes() {
         topTimes.clear();
         File file = new File(TIME_FILE);
-
-        // Se o ficheiro não existir, não faz nada
         if (!file.exists()) return;
 
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                // Ignorar linhas vazias para evitar erros de parse
-                if (line.trim().isEmpty()) continue;
-
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
                 try {
                     topTimes.add(Float.parseFloat(line));
                 } catch (NumberFormatException e) {
-                    System.out.println("Erro ao ler score (formato inválido): " + line);
+                    System.out.println("Erro ao ler score: " + line);
                 }
             }
             // Ordena: tempos menores primeiro (mais rápido é melhor)
             Collections.sort(topTimes);
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de highscores não encontrado.");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    // Guarda a lista atual no ficheiro
     private void saveTimes() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(TIME_FILE))) {
+        try (FileWriter writer = new FileWriter((TIME_FILE))) {
+            // Guarda apenas os top 5 para não encher o ficheiro
             int count = 0;
             for (Float score : topTimes) {
-                if (count >= 5) break; // Guarda apenas os top 5
-
-                // println escreve o número e muda de linha automaticamente
-                writer.println(score);
-
+                if (count >= 5) break;
+                writer.write(String.valueOf(score));
+                writer.write("\n");
                 count++;
             }
         } catch (IOException e) {
-            System.out.println("Erro ao guardar highscores.");
             e.printStackTrace();
         }
     }
@@ -285,7 +298,8 @@ public class HudAppState extends BaseAppState {
         saveTimes();
         updateTimeDisplay(); // Atualiza o texto no ecrã
     }
-    public void positionTopTimes(int w, int h) {
+    public void positionHighScores(int w, int h) {
+        // Posiciona no canto superior direito, abaixo do timer (ajusta o -50 ou -100 conforme necessário)
         topTimesText.setLocalTranslation(w - 180, h - 60, 0);
     }
     @Override
@@ -298,15 +312,16 @@ public class HudAppState extends BaseAppState {
         centerHealthBar(h);
         centerHudEffects(w, h);
         centerTimer(w, h);
-        positionTopTimes(w, h);
+        centerRecipes(w, h);
+        positionHighScores(w, h);
         updateInventory(w, h);
         // tpf = Time Per Frame (tempo que passou desde o último frame em segundos)
 
         if (gameRunning) {
-            // Incrementar o tempo
+            // 2. Incrementar o tempo
             gameTime += tpf;
 
-            // Atualizar o texto na tela
+            // 3. Atualizar o texto na tela
             // (int) gameTime remove as casas decimais para ficar mais limpo
             timerText.setText("Tempo: " + (int) gameTime + "s");
         }

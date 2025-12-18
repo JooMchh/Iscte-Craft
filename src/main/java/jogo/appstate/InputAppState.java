@@ -25,6 +25,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     private volatile boolean damageRequested;
     private volatile boolean invLeftRequested;
     private volatile boolean invRightRequested;
+    private volatile boolean dropRequested;
+    private volatile boolean craft1Requested;
+    private volatile boolean craft2Requested;
     private float mouseDX, mouseDY;
     private boolean mouseCaptured = true;
 
@@ -61,8 +64,14 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("invLeft", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
         // Scroll inv Left (scroll wheel up)
         im.addMapping("invRight", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+        // Drop item
+        im.addMapping("dropItem", new KeyTrigger(KeyInput.KEY_Q));
+        // Craft Recipe 1
+        im.addMapping("Craft1", new KeyTrigger(KeyInput.KEY_1));
+        // Craft Recipe 2
+        im.addMapping("Craft2", new KeyTrigger(KeyInput.KEY_2));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight", "dropItem", "Craft1", "Craft2");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -88,6 +97,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("Damage");
         im.deleteMapping("invLeft");
         im.deleteMapping("invRight");
+        im.deleteMapping("dropItem");
+        im.deleteMapping("Craft1");
+        im.deleteMapping("Craft2");
         im.removeListener(this);
     }
 
@@ -136,6 +148,15 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             }
             case "invRight" -> {
                 if (isPressed && mouseCaptured) invRightRequested = true;
+            }
+            case "dropItem" -> {
+                if (isPressed) dropRequested = true;
+            }
+            case "Craft1" -> {
+                if (isPressed) craft1Requested = true;
+            }
+            case "Craft2" -> {
+                if (isPressed) craft2Requested = true;
             }
         }
     }
@@ -212,6 +233,24 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     public boolean consumeInvRightRequested() {
         boolean r = invRightRequested;
         invRightRequested = false;
+        return r;
+    }
+
+    public boolean consumeDropRequested() {
+        boolean r = dropRequested;
+        dropRequested = false;
+        return r;
+    }
+
+    public boolean consumeCraft1Requested() {
+        boolean r = craft1Requested;
+        craft1Requested = false;
+        return r;
+    }
+
+    public boolean consumeCraft2Requested() {
+        boolean r = craft2Requested;
+        craft2Requested = false;
         return r;
     }
 

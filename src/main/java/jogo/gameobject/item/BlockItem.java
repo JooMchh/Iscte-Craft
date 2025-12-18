@@ -13,7 +13,7 @@ import jogo.voxel.VoxelPalette;
 
 public class BlockItem extends Item implements BlockType {
     private byte blockId;
-    private final VoxelPalette voxelPalette = new VoxelPalette();
+    private final VoxelPalette voxelPalette = new VoxelPalette().defaultPalette();
 
     public BlockItem(String name, byte blockId) {
         super(name);
@@ -26,7 +26,14 @@ public class BlockItem extends Item implements BlockType {
     @Override
     public void onInteract(PlayerAppState playerAppState) {
         Inventory plrInv =  playerAppState.getInventory();
-        plrInv.setSlot(0, this);
+        if (stack > 1) {
+           for (int i = 0; i < stack; i++) {
+               plrInv.setSlot(0, this);
+           }
+        } else {
+            plrInv.setSlot(0, this);
+        }
+
     }
 
     @Override
@@ -35,8 +42,8 @@ public class BlockItem extends Item implements BlockType {
     }
 
     @Override
-    public Geometry render(AssetManager assetManager) { // o 'T O D O'
-        Geometry g = new Geometry(name, new Box(new Vector3f(0,.3f,0), .3f, .3f, .3f));
+    public Geometry render(AssetManager assetManager) {
+        Geometry g = new Geometry(name + "" + Math.random(), new Box(new Vector3f(0,.3f,0), .3f, .3f, .3f));
         Material m = voxelPalette.get(blockId).getMaterial(assetManager);
         g.setMaterial(m);
         return g;

@@ -18,6 +18,7 @@ import jogo.gameobject.item.BlockType;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
+import jogo.voxel.blocks.OreType;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -99,7 +100,11 @@ public class WorldAppState extends BaseAppState {
                     return;
                 }
                 if (voxelWorld.breakAt(cell.x, cell.y, cell.z)) {
-                    playerInventory.setSlot(0, new BlockItem(type.getName(), blockID));
+                    if (type instanceof OreType oreType) {
+                        playerInventory.setSlot(0, oreType.onMine());
+                    } else {
+                        playerInventory.setSlot(0, new BlockItem(type.getName(), blockID));
+                    }
                     voxelWorld.rebuildDirtyChunks(physicsSpace);
                     playerAppState.refreshPhysics();
                 }
