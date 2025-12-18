@@ -6,13 +6,12 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import jogo.AI.ActiveAI;
+import jogo.AI.Allies.Ally;
 import jogo.AI.Enemies.Enemy;
 import jogo.engine.GameRegistry;
 import jogo.framework.math.Vec3;
+import jogo.gameobject.character.*;
 import jogo.gameobject.character.Character;
-import jogo.gameobject.character.HazardImmune;
-import jogo.gameobject.character.SlimeEnemy;
-import jogo.gameobject.character.StrongerSlimeEnemy;
 import jogo.gameobject.item.Item;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
@@ -164,6 +163,15 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
         ActiveAI ai = new Enemy(strongerSlimeEnemy, rootNode, physicsSpace, position);
         activeAIs.add(ai);
         System.out.println("AIAppState spawn: Spawned a new Cave Slime Enemy at" + position.x + "," + position.y + "," + position.z);
+    }
+
+    public void spawnWoodGolemAlly(Vector3f position) {
+        Character woodGolemAlly = new WoodGolemAlly();
+        woodGolemAlly.setPosition(new Vec3(position.x, position.y, position.z));
+        registry.add(woodGolemAlly);
+        ActiveAI ai = new Ally(woodGolemAlly, rootNode, physicsSpace, position);
+        activeAIs.add(ai);
+        System.out.println("AIAppState spawn: Spawned a Wood Golem Ally at" + position.x + "," + position.y + "," + position.z);
     }
 
     //

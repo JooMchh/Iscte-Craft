@@ -125,6 +125,7 @@ public class VoxelWorld {
         int deepLiquidLevel = 2;
         int slimeAmount = 75;
         int caveSlimeAmount = 50;
+        int golemAmount = 1;
         // world generation
         for (int x = pos.x - radius; x < pos.x + radius; x++) {
             for (int z = pos.z - radius; z < pos.z + radius; z++) {
@@ -188,6 +189,11 @@ public class VoxelWorld {
                 if (slimeAmount > 0 && Math.random() < 0.001) {
                     aiAppState.spawnSlimeEnemy(new Vector3f(x,topY+1,z));
                     slimeAmount -= 1;
+                }
+
+                if (golemAmount > 0) {
+                    aiAppState.spawnWoodGolemAlly(getRecommendedSpawn().add(0,18,0));
+                    golemAmount-=1;
                 }
 
             }

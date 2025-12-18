@@ -28,12 +28,12 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(5);
+        characterType.characterDamage(10);
     }
 
     @Override
     public BetterCharacterControl getCharacterControl() {
-        BetterCharacterControl characterControl = new BetterCharacterControl(0.4f, 1.2f, 60f);
+        BetterCharacterControl characterControl = new BetterCharacterControl(0.3f, 1.3f, 60f);
         characterControl.setGravity(new Vector3f(0, -25f, 0));
         characterControl.setJumpForce(new Vector3f(0, this.getSetJumpForce(), 0));
         return characterControl;
@@ -41,7 +41,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public float getSetWalkSpeed() {
-        return 8.0f;
+        return 6.0f;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SlimeEnemy extends Character implements AIType {
         List<Item> drops = new ArrayList<>();
 
         Item healingGoop = new HealingGoop();
-        healingGoop.setStack(25);
+        healingGoop.setStack(15);
         drops.add(healingGoop);
 
         if (Math.random() > .25) {
@@ -73,7 +73,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public float getAttackRange() {
-        return 1.5f;
+        return 2.5f;
     }
 
     public Geometry render(AssetManager assetManager) { // o 'T O D O'

@@ -1,22 +1,19 @@
-package jogo.AI.Enemies;
+package jogo.AI.Allies;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import jogo.AI.ActiveAI;
-import jogo.AI.Allies.Ally;
+import jogo.AI.Enemies.Enemy;
 import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
 import jogo.gameobject.character.Character;
 import jogo.util.VectorLengthCompare;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class Enemy extends ActiveAI {
-    public Enemy(Character character, Node rootNode, PhysicsSpace physicsSpace, Vector3f spawnPosition) {
+public class Ally extends ActiveAI {
+    public Ally(Character character, Node rootNode, PhysicsSpace physicsSpace, Vector3f spawnPosition) {
         super(character, rootNode, physicsSpace, spawnPosition);
     }
 
@@ -31,28 +28,25 @@ public class Enemy extends ActiveAI {
         if (playerPos != null) {
             HashMap<Vector3f, ActiveAI> targets = new HashMap<>();
 
-            for (ActiveAI ai : activeAIS) { // search for closest ally
-                if (ai instanceof Ally) {
+            for (ActiveAI ai : activeAIS) { // search for closest enemy
+                if (ai instanceof Enemy) {
                     targets.put(ai.getAiNode().getWorldTranslation().subtract(aiNode.getWorldTranslation()), ai);
                 }
             }
 
             List<Vector3f> directions = new ArrayList<>(targets.keySet());
 
-            Vector3f playerDirection = playerPos.subtract(aiNode.getWorldTranslation());
-            Vector3f direction = playerDirection;
-            CharacterType target = playerAppState;
+            Vector3f direction = null;
+            CharacterType target = null;
 
             if (directions.size() > 0) {
                 Collections.sort(directions, new VectorLengthCompare());
 
-                if (playerDirection.length() > directions.get(0).length()) { // if player is closer, then go to player
-                    direction = directions.get(0);
-                    target = targets.get(direction);
-                }
+                direction = directions.get(0);
+                target = targets.get(direction);
             }
 
-            if (direction.length() <= getAIType().getDetectionRadius()) {
+            if (direction.length() <= getAIType().getDetectionRadius() && direction != null && target != null) {
                 if (direction.length() > getAIType().getAttackRange() && !playerAppState.getPlayer().cantHit()) {
                     direction.normalizeLocal();
                     direction.y = 0; // set y a height do ai para n voar
@@ -68,7 +62,7 @@ public class Enemy extends ActiveAI {
                     characterControl.setWalkDirection(direction.mult(-moveSpeed/2));
                 }
             } else {
-                // stop walking if :(
+                // stop walking if too far :(
                 characterControl.setWalkDirection(Vector3f.ZERO);
             }
 
