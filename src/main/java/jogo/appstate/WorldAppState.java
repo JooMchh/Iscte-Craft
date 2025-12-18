@@ -145,7 +145,7 @@ public class WorldAppState extends BaseAppState {
 
         if ((px == placePos.x || ex == placePos.x) &&
                 (py == placePos.y || ey == placePos.y) &&
-                (pz == placePos.z || ez == placePos.z) || py < voxelWorld.getSizeY()
+                (pz == placePos.z || ez == placePos.z) || py > voxelWorld.getSizeY()
         ) {
             return false;
         } else {
