@@ -12,6 +12,7 @@ import jogo.framework.math.Vec3;
 import jogo.gameobject.character.Character;
 import jogo.gameobject.character.HazardImmune;
 import jogo.gameobject.character.SlimeEnemy;
+import jogo.gameobject.character.StrongerSlimeEnemy;
 import jogo.gameobject.item.Item;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
@@ -139,7 +140,7 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
             String blockDirection = blockDirectionKeySplit[0];
 
             if (surroundingBlock instanceof HazardType hazardBlock) {
-                System.out.println("AI Near contact hazard: " + surroundingBlock.getName() + blockDirection);
+                //System.out.println("AI Near contact hazard: " + surroundingBlock.getName() + blockDirection);
                 hazardBlock.onContact(ai);
             }
         }
@@ -154,6 +155,15 @@ public class AIAppState extends BaseAppState { // insane class para gerir e spaw
         ActiveAI ai = new Enemy(slimeEnemy, rootNode, physicsSpace, position);
         activeAIs.add(ai);
         System.out.println("AIAppState spawn: Spawned a new Slime Enemy at" + position.x + "," + position.y + "," + position.z);
+    }
+
+    public void spawnCaveSlimeEnemy(Vector3f position) {
+        Character strongerSlimeEnemy = new StrongerSlimeEnemy();
+        strongerSlimeEnemy.setPosition(new Vec3(position.x, position.y, position.z));
+        registry.add(strongerSlimeEnemy);
+        ActiveAI ai = new Enemy(strongerSlimeEnemy, rootNode, physicsSpace, position);
+        activeAIs.add(ai);
+        System.out.println("AIAppState spawn: Spawned a new Cave Slime Enemy at" + position.x + "," + position.y + "," + position.z);
     }
 
     //

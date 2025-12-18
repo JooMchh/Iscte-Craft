@@ -215,7 +215,7 @@ public class HudAppState extends BaseAppState {
 
     public void centerRecipes(int w, int h) {
         float x = recipesText.getLineWidth() / 5f;
-        float y = (h + recipesText.getLineHeight()) / 2f;
+        float y = (h + recipesText.getLineHeight() + 80f) / 2f;
         recipesText.setLocalTranslation(x, y, 0);
     }
 

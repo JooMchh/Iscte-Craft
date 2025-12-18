@@ -169,7 +169,9 @@ public class PlayerAppState extends BaseAppState implements CharacterType {
             craft(2);
         } else if (input.consumeCraft4Requested()) {
             craft(3);
-        }
+        } else if (input.consumeCraft5Requested()) {
+            craft(4);
+    }
 
         // inventory control requests
         if (input.consumeInvLeftRequested()) {

@@ -14,8 +14,8 @@ public abstract class Character extends GameObject {
     }
 
     // Example state hooks students can extend
-    private int MAX_HEALTH = 100;
-    private int health = MAX_HEALTH;
+    protected int MAX_HEALTH = 100;
+    protected int health = MAX_HEALTH;
     protected float internalDamageTickTimer = 0f;
     protected final float iFrames = 0.25f;
 

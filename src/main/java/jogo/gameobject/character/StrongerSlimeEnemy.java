@@ -11,14 +11,17 @@ import com.jme3.texture.Texture2D;
 import jogo.appstate.CharacterType;
 import jogo.appstate.PlayerAppState;
 import jogo.gameobject.item.*;
+import jogo.voxel.blocks.HazardType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlimeEnemy extends Character implements AIType {
+public class StrongerSlimeEnemy extends Character implements AIType, HazardImmune {
 
-    public SlimeEnemy() {
-        super("Slime");
+    public StrongerSlimeEnemy() {
+        super("Cave Slime");
+        MAX_HEALTH = 500;
+        health = MAX_HEALTH;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public void onAttack(CharacterType characterType) {
-        characterType.characterDamage(5);
+        characterType.characterDamage(15);
     }
 
     @Override
@@ -41,7 +44,7 @@ public class SlimeEnemy extends Character implements AIType {
 
     @Override
     public float getSetWalkSpeed() {
-        return 8.0f;
+        return 3.0f;
     }
 
     @Override
@@ -54,13 +57,13 @@ public class SlimeEnemy extends Character implements AIType {
         List<Item> drops = new ArrayList<>();
 
         Item healingGoop = new HealingGoop();
-        healingGoop.setStack(25);
+        healingGoop.setStack(75);
         drops.add(healingGoop);
 
         if (Math.random() > .25) {
-            Item coreItem = new CrystalCore();
-            coreItem.setStack((int) 1);
-            drops.add(coreItem);
+            Item totemItem = new TotemPart();
+            totemItem.setStack(totemItem.maxStack());
+            drops.add(totemItem);
         }
 
         return drops;
@@ -77,12 +80,12 @@ public class SlimeEnemy extends Character implements AIType {
     }
 
     public Geometry render(AssetManager assetManager) { // o 'T O D O'
-        Geometry g = new Geometry(name, new Box(new Vector3f(0,.6f,0), .6f, .6f, .6f));
+        Geometry g = new Geometry(name, new Box(new Vector3f(0,.8f,0), .8f, .8f, .8f));
         Texture2D tex = (Texture2D) assetManager.loadTexture("Textures/SlimeFace.png");
         Material m = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         m.setBoolean("UseMaterialColors", true);
         m.setTexture("DiffuseMap", tex);
-        m.setColor("Diffuse", ColorRGBA.White);
+        m.setColor("Diffuse", ColorRGBA.Red);
         m.setColor("Specular", ColorRGBA.White.mult(0.1f));
         m.setFloat("Shininess", 50f);
         g.setMaterial(m);

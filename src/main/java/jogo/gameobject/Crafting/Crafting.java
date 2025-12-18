@@ -35,7 +35,20 @@ public class Crafting {
                 )
         );
 
-        List<ItemStack> neededForCrystalCore = new ArrayList<>(); // recipe para fazer crystal core
+        List<ItemStack> neededForHeroSword = new ArrayList<>(); // recipe para fazer crystal core
+        neededForHeroSword.add(new ItemStack(new BlockItem(palette.get(VoxelPalette.WOOD_PLANK_ID).getName(), VoxelPalette.WOOD_PLANK_ID), 1));
+        neededForHeroSword.add(new ItemStack(new MetalScrap(), 2));
+        neededForHeroSword.add(new ItemStack(new CrystalCore(), 1));
+        recipes.add(new Recipe("1 Hero Sword",
+                        neededForHeroSword,
+                        new ItemStack(
+                                new PowerfulWeapon(),
+                                1
+                        )
+                )
+        );
+
+        List<ItemStack> neededForCrystalCore = new ArrayList<>(); // recipe para fazer crystal core block
         neededForCrystalCore.add(new ItemStack(new CrystalCore(), 4));
         neededForCrystalCore.add(new ItemStack(new MetalScrap(), 2));
         recipes.add(new Recipe("1 Crystal Core Block",

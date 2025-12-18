@@ -30,6 +30,7 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     private volatile boolean craft2Requested;
     private volatile boolean craft3Requested;
     private volatile boolean craft4Requested;
+    private volatile boolean craft5Requested;
     private float mouseDX, mouseDY;
     private boolean mouseCaptured = true;
 
@@ -76,8 +77,10 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.addMapping("Craft3", new KeyTrigger(KeyInput.KEY_3));
         // Craft Recipe 4
         im.addMapping("Craft4", new KeyTrigger(KeyInput.KEY_4));
+        // Craft Recipe 4
+        im.addMapping("Craft5", new KeyTrigger(KeyInput.KEY_5));
 
-        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight", "dropItem", "Craft1", "Craft2", "Craft3", "Craft4");
+        im.addListener(this, "MoveForward", "MoveBackward", "MoveLeft", "MoveRight", "Jump", "Sprint", "ToggleMouse", "Break", "Place", "ToggleShading", "Respawn", "Interact", "Damage", "Fullscreen", "invLeft", "invRight", "dropItem", "Craft1", "Craft2", "Craft3", "Craft4", "Craft5");
         im.addListener(this, "MouseX+", "MouseX-", "MouseY+", "MouseY-");
     }
 
@@ -108,6 +111,7 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
         im.deleteMapping("Craft2");
         im.deleteMapping("Craft3");
         im.deleteMapping("Craft4");
+        im.deleteMapping("Craft5");
         im.removeListener(this);
     }
 
@@ -171,6 +175,9 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
             }
             case "Craft4" -> {
                 if (isPressed) craft4Requested = true;
+            }
+            case "Craft5" -> {
+                if (isPressed) craft5Requested = true;
             }
         }
     }
@@ -277,6 +284,12 @@ public class InputAppState extends BaseAppState implements ActionListener, Analo
     public boolean consumeCraft4Requested() {
         boolean r = craft4Requested;
         craft4Requested = false;
+        return r;
+    }
+
+    public boolean consumeCraft5Requested() {
+        boolean r = craft5Requested;
+        craft5Requested = false;
         return r;
     }
 

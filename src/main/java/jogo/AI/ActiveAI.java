@@ -83,7 +83,7 @@ public abstract class ActiveAI implements CharacterType {
 
     @Override
     public void resetJumpForce() {
-        System.out.println("Active AI: reset jumpforce");
+        //System.out.println("Active AI: reset jumpforce");
         if (characterControl != null) {
             characterControl.setJumpForce(new Vector3f(0, this.getSetJumpForce(),0));
         }
@@ -91,20 +91,20 @@ public abstract class ActiveAI implements CharacterType {
 
     @Override
     public void resetWalkSpeed() {
-        System.out.println("Active AI: reset walkspeed");
+        //System.out.println("Active AI: reset walkspeed");
         moveSpeed = this.getSetWalkSpeed();
     }
 
     @Override
     public void setWalkSpeed(float walkSpeed) {
         moveSpeed = walkSpeed;
-        System.out.println("Active AI: set walkspeed to " + walkSpeed);
+        //System.out.println("Active AI: set walkspeed to " + walkSpeed);
     }
 
     @Override
     public void setJumpForce(float jumpForce) {
         if (characterControl != null) {
-            System.out.println("Active AI: set vertical jumpforce to " + jumpForce);
+            //wSystem.out.println("Active AI: set vertical jumpforce to " + jumpForce);
             this.characterControl.setJumpForce(new Vector3f(0, jumpForce, 0));
         }
     }

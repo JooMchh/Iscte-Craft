@@ -22,6 +22,7 @@ import jogo.gameobject.character.Character;
 import jogo.gameobject.item.BlockItem;
 import jogo.gameobject.item.BlockType;
 import jogo.gameobject.item.Item;
+import jogo.gameobject.item.WeaponType;
 import jogo.voxel.VoxelBlockType;
 import jogo.voxel.VoxelPalette;
 import jogo.voxel.VoxelWorld;
@@ -113,7 +114,13 @@ public class WorldAppState extends BaseAppState {
                 Spatial hit = results.getClosestCollision().getGeometry();
                 GameObject obj = interactionAppState.findRegistered(hit);
                 if (obj instanceof Character character) {
-                    character.damage(5);
+                    ItemStack selectedSlot = playerInventory.getSelectedItemStack();
+                    if (selectedSlot != null && selectedSlot.getItem() instanceof WeaponType weapon) {
+                        character.damage(weapon.getDamage());
+                    } else {
+                        character.damage(5);
+                    }
+
                     return; // hits found character and damages ignoring the block behind
                 }
             }

@@ -1,7 +1,8 @@
 package jogo.voxel.blocks;
 
 import jogo.appstate.CharacterType;
+import jogo.appstate.WorldAppState;
 
 public interface InteractableType {
-    public void onInteract(CharacterType appState);
+    public boolean onInteract(WorldAppState world);
 }
